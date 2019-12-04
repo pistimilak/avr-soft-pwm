@@ -10,7 +10,7 @@
 
 
 
-#define ARDUINO_DEMO    0
+#define ARDUINO_DEMO    1
 
 #if ARDUINO_DEMO
 #define ARDUION_LED         PB5

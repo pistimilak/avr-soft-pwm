@@ -1,0 +1,230 @@
+GAS LISTING /tmp/ccUvCT6m.s 			page 1
+
+
+   1               		.file	"sig.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.text
+   8               	.Ltext0:
+   9               		.cfi_sections	.debug_frame
+  10               		.section	.text.sig_init,"ax",@progbits
+  11               	.global	sig_init
+  13               	sig_init:
+  14               	.LFB0:
+  15               		.file 1 "src/sig.c"
+   1:src/sig.c     **** /**
+   2:src/sig.c     ****  * @file led_sig.c
+   3:src/sig.c     ****  * @author Istvan Milak (istvan.milak@gmail.com)
+   4:src/sig.c     ****  * @brief
+   5:src/sig.c     ****  Periodic signal handler for microcontroller applications.
+   6:src/sig.c     ****  Timer can drive throug the value array on the outputs, with a given phase offset
+   7:src/sig.c     ****  * @version 0.1
+   8:src/sig.c     ****  * @date 2019-12-02
+   9:src/sig.c     ****  *
+  10:src/sig.c     ****  * @copyright Copyright (c) 2019
+  11:src/sig.c     ****  *
+  12:src/sig.c     ****  */
+  13:src/sig.c     **** #include "sig.h"
+  14:src/sig.c     **** 
+  15:src/sig.c     **** /*Initilaizing led signal*/
+  16:src/sig.c     **** sig_t sig_init(sig_val_t *signal, sig_size_t sig_size, sig_size_t phase_offset)
+  17:src/sig.c     **** {
+  16               		.loc 1 17 0
+  17               		.cfi_startproc
+  18               	.LVL0:
+  19 0000 CF93      		push r28
+  20               	.LCFI0:
+  21               		.cfi_def_cfa_offset 3
+  22               		.cfi_offset 28, -2
+  23 0002 DF93      		push r29
+  24               	.LCFI1:
+  25               		.cfi_def_cfa_offset 4
+  26               		.cfi_offset 29, -3
+  27 0004 CDB7      		in r28,__SP_L__
+  28 0006 DEB7      		in r29,__SP_H__
+  29               	.LCFI2:
+  30               		.cfi_def_cfa_register 28
+  31 0008 6097      		sbiw r28,16
+  32               	.LCFI3:
+  33               		.cfi_def_cfa_offset 20
+  34 000a 0FB6      		in __tmp_reg__,__SREG__
+  35 000c F894      		cli
+  36 000e DEBF      		out __SP_H__,r29
+  37 0010 0FBE      		out __SREG__,__tmp_reg__
+  38 0012 CDBF      		out __SP_L__,r28
+  39               	/* prologue: function */
+  40               	/* frame size = 16 */
+  41               	/* stack size = 18 */
+GAS LISTING /tmp/ccUvCT6m.s 			page 2
+
+
+  42               	.L__stack_usage = 18
+  43 0014 9C01      		movw r18,r24
+  44 0016 CA01      		movw r24,r20
+  45               	.LVL1:
+  18:src/sig.c     **** 	sig_t sig;
+  19:src/sig.c     **** 	sig.signal = signal;
+  46               		.loc 1 19 0
+  47 0018 3A87      		std Y+10,r19
+  48 001a 2987      		std Y+9,r18
+  20:src/sig.c     **** 	sig.signal_size = sig_size;
+  49               		.loc 1 20 0
+  50 001c 7C87      		std Y+12,r23
+  51 001e 6B87      		std Y+11,r22
+  21:src/sig.c     **** 	sig.phase_offset = phase_offset;
+  52               		.loc 1 21 0
+  53 0020 588B      		std Y+16,r21
+  54 0022 4F87      		std Y+15,r20
+  22:src/sig.c     **** 	sig.pval = (signal + (phase_offset % sig.signal_size));
+  55               		.loc 1 22 0
+  56 0024 0E94 0000 		call __udivmodhi4
+  57               	.LVL2:
+  58 0028 820F      		add r24,r18
+  59 002a 931F      		adc r25,r19
+  60 002c 9E87      		std Y+14,r25
+  61 002e 8D87      		std Y+13,r24
+  23:src/sig.c     **** 	return sig;
+  62               		.loc 1 23 0
+  63 0030 88E0      		ldi r24,lo8(8)
+  64 0032 FE01      		movw r30,r28
+  65 0034 3996      		adiw r30,9
+  66 0036 DE01      		movw r26,r28
+  67 0038 1196      		adiw r26,1
+  68               		0:
+  69 003a 0190      		ld r0,Z+
+  70 003c 0D92      		st X+,r0
+  71 003e 8A95      		dec r24
+  72 0040 01F4      		brne 0b
+  73 0042 2981      		ldd r18,Y+1
+  74               	.LVL3:
+  75 0044 3A81      		ldd r19,Y+2
+  76 0046 4B81      		ldd r20,Y+3
+  77               	.LVL4:
+  78 0048 5C81      		ldd r21,Y+4
+  79 004a 6D81      		ldd r22,Y+5
+  80 004c 7E81      		ldd r23,Y+6
+  24:src/sig.c     **** }
+  81               		.loc 1 24 0
+  82 004e 8F81      		ldd r24,Y+7
+  83 0050 9885      		ldd r25,Y+8
+  84               	/* epilogue start */
+  85 0052 6096      		adiw r28,16
+  86 0054 0FB6      		in __tmp_reg__,__SREG__
+  87 0056 F894      		cli
+  88 0058 DEBF      		out __SP_H__,r29
+  89 005a 0FBE      		out __SREG__,__tmp_reg__
+  90 005c CDBF      		out __SP_L__,r28
+  91 005e DF91      		pop r29
+GAS LISTING /tmp/ccUvCT6m.s 			page 3
+
+
+  92 0060 CF91      		pop r28
+  93 0062 0895      		ret
+  94               		.cfi_endproc
+  95               	.LFE0:
+  97               		.section	.text.sig_tick,"ax",@progbits
+  98               	.global	sig_tick
+ 100               	sig_tick:
+ 101               	.LFB1:
+  25:src/sig.c     **** 
+  26:src/sig.c     **** /*Call by timer interrupt*/
+  27:src/sig.c     **** void sig_tick(sig_t *signal)
+  28:src/sig.c     **** {
+ 102               		.loc 1 28 0
+ 103               		.cfi_startproc
+ 104               	.LVL5:
+ 105               	/* prologue: function */
+ 106               	/* frame size = 0 */
+ 107               	/* stack size = 0 */
+ 108               	.L__stack_usage = 0
+ 109 0000 FC01      		movw r30,r24
+  29:src/sig.c     **** 
+  30:src/sig.c     **** 	signal->pval = (signal->pval == signal->signal + signal->signal_size  - 1) ?
+ 110               		.loc 1 30 0
+ 111 0002 4481      		ldd r20,Z+4
+ 112 0004 5581      		ldd r21,Z+5
+ 113 0006 8081      		ld r24,Z
+ 114 0008 9181      		ldd r25,Z+1
+ 115               	.LVL6:
+ 116 000a 2281      		ldd r18,Z+2
+ 117 000c 3381      		ldd r19,Z+3
+ 118 000e 2150      		subi r18,1
+ 119 0010 3109      		sbc r19,__zero_reg__
+ 120 0012 280F      		add r18,r24
+ 121 0014 391F      		adc r19,r25
+  31:src/sig.c     ****                                     signal->signal : ++signal->pval;
+ 122               		.loc 1 31 0
+ 123 0016 4217      		cp r20,r18
+ 124 0018 5307      		cpc r21,r19
+ 125 001a 01F0      		breq .L3
+ 126               		.loc 1 31 0 is_stmt 0 discriminator 2
+ 127 001c CA01      		movw r24,r20
+ 128 001e 0196      		adiw r24,1
+ 129 0020 9583      		std Z+5,r25
+ 130 0022 8483      		std Z+4,r24
+ 131               	.L3:
+  30:src/sig.c     ****                                     signal->signal : ++signal->pval;
+ 132               		.loc 1 30 0 is_stmt 1
+ 133 0024 9583      		std Z+5,r25
+ 134 0026 8483      		std Z+4,r24
+ 135 0028 0895      		ret
+ 136               		.cfi_endproc
+ 137               	.LFE1:
+ 139               		.section	.text.sig_get_val,"ax",@progbits
+ 140               	.global	sig_get_val
+ 142               	sig_get_val:
+ 143               	.LFB2:
+  32:src/sig.c     **** 
+GAS LISTING /tmp/ccUvCT6m.s 			page 4
+
+
+  33:src/sig.c     **** }
+  34:src/sig.c     **** 
+  35:src/sig.c     **** /*Get current value from signal*/
+  36:src/sig.c     **** sig_val_t sig_get_val(sig_t *signal)
+  37:src/sig.c     **** {
+ 144               		.loc 1 37 0
+ 145               		.cfi_startproc
+ 146               	.LVL7:
+ 147               	/* prologue: function */
+ 148               	/* frame size = 0 */
+ 149               	/* stack size = 0 */
+ 150               	.L__stack_usage = 0
+  38:src/sig.c     **** 	return *(signal->pval);
+ 151               		.loc 1 38 0
+ 152 0000 DC01      		movw r26,r24
+ 153 0002 1496      		adiw r26,4
+ 154 0004 ED91      		ld r30,X+
+ 155 0006 FC91      		ld r31,X
+ 156 0008 1597      		sbiw r26,4+1
+  39:src/sig.c     **** }
+ 157               		.loc 1 39 0
+ 158 000a 8081      		ld r24,Z
+ 159               	.LVL8:
+ 160 000c 0895      		ret
+ 161               		.cfi_endproc
+ 162               	.LFE2:
+ 164               		.text
+ 165               	.Letext0:
+ 166               		.file 2 "/usr/lib/avr/include/stdint.h"
+ 167               		.file 3 "inc/sig_config.h"
+ 168               		.file 4 "inc/sig.h"
+GAS LISTING /tmp/ccUvCT6m.s 			page 5
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 sig.c
+     /tmp/ccUvCT6m.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccUvCT6m.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccUvCT6m.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccUvCT6m.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccUvCT6m.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccUvCT6m.s:13     .text.sig_init:0000000000000000 sig_init
+     /tmp/ccUvCT6m.s:100    .text.sig_tick:0000000000000000 sig_tick
+     /tmp/ccUvCT6m.s:142    .text.sig_get_val:0000000000000000 sig_get_val
+
+UNDEFINED SYMBOLS
+__udivmodhi4
