@@ -10,7 +10,7 @@
 
 
 
-#define ARDUINO_DEMO    1
+#define ARDUINO_DEMO    0
 
 #if ARDUINO_DEMO
 #define ARDUION_LED         PB5
@@ -38,7 +38,7 @@ int main(void)
     }
 #else
     spwm_en_state = 0xffff;
-    spwm_init_8b();
+    spwm_init();
 
     spwm_set_ch(0, 127);
     spwm_set_ch(1, 24);
@@ -57,7 +57,7 @@ int main(void)
     spwm_set_ch(15, 168);
 
     while(1) {
-        spwm_tick_8b();
+        spwm_tick();
     }
 #endif
 
