@@ -36,7 +36,8 @@ HEX_DIR = hex
 C_SOURCES =  \
 src/main.c \
 src/sig.c \
-src/sin.c
+src/sin.c \
+src/soft_pwm.c
 
 
 # ASM sources

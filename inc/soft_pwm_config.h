@@ -3,28 +3,44 @@
 
 #include <avr/io.h>
 
-/*
-Supported ports:
-A, B, C, D, E, F, G, H
-*/
+
 
 
 /*Top value of soft pwm counter*/
 #define SPWM_TOP_VAL                255
 
+
 /*Type of pwm, it can be INVERTING or NON_INVERTING*/
 /*Do not modify*/
-
 #define SPWM_MODE_INVERTING         0
 #define SPWM_MODE_NON_INVERTING     1
 
-#define SPWM_MODE                   SPWM_MODE_NON_INVERTING // set mode at here
+/*Here you can select the mode (inerting or non inverting)*/
+#define SPWM_MODE                   SPWM_MODE_NON_INVERTING
 
+/*
+Por buffering:
+Collect the all modification for particular port and write each modification in one step.
+A little bit slower then not buffering
+*/
+#define SPWM_USE_PORT_BUFFERING     0
+
+/*Select manualy the configured ports to buffering*/
+#if SPWM_USE_PORT_BUFFERING
+    #define SPWM_MAX_PORT_NUM       8
+    #define SPWM_PORTA_USED         0
+    #define SPWM_PORTB_USED         1
+    #define SPWM_PORTC_USED         0
+    #define SPWM_PORTD_USED         1
+    #define SPWM_PORTE_USED         0
+    #define SPWM_PORTF_USED         0
+    #define SPWM_PORTG_USED         0
+    #define SPWM_PORTH_USED         0
+#endif
 
 /*Max channel number*/
 /*Do not modify*/
-#define SPWM_MAX_CHANNEL_NUM     16
-
+#define SPWM_MAX_CHANNEL_NUM        16
 
 
 /*Output configuration*/
@@ -92,6 +108,9 @@ A, B, C, D, E, F, G, H
 #define SPWM_CH15                PD7
 #define SPWM_CH15_DDR            DDRD
 #define SPWM_CH15_PORT           PORTD
+
+
+
 
 
 /*End configuration*/

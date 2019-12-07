@@ -24,66 +24,20 @@
 #define SPWM_CH14_ID             14
 #define SPWM_CH15_ID             15
 
-
-#define __IS_PORT_USED(port)        (((SPWM_CHO_PORT ) == (port)) || ((SPWM_CH1_PORT ) == (port)) || \
-                                     ((SPWM_CH2_PORT ) == (port)) || ((SPWM_CH3_PORT ) == (port)) || \
-                                     ((SPWM_CH4_PORT ) == (port)) || ((SPWM_CH5_PORT ) == (port)) || \
-                                     ((SPWM_CH6_PORT ) == (port)) || ((SPWM_CH7_PORT ) == (port)) || \
-                                     ((SPWM_CH8_PORT ) == (port)) || ((SPWM_CH9_PORT ) == (port)) || \
-                                     ((SPWM_CH10_PORT) == (port)) || ((SPWM_CH11_PORT) == (port)) || \
-                                     ((SPWM_CH12_PORT) == (port)) || ((SPWM_CH13_PORT) == (port)) || \
-                                     ((SPWM_CH14_PORT) == (port)) || ((SPWM_CH15_PORT) == (port)))
-
-
-
-
 // #define spwm_set_en_state(state)            spwm_en_state = state
 #define spwm_set_ch(id,val)                 spwm_duty_cycle_buff[id] = val
 
-/*Check configuration*/
-#if __IS_PORT_USED(PORTA)
-    #warning SPWM on PORTA configured
+#if SPWM_USE_PORT_BUFFERING
+#define SPWM_PORTA_BUFF_IDX      0
+#define SPWM_PORTB_BUFF_IDX      1
+#define SPWM_PORTC_BUFF_IDX      2
+#define SPWM_PORTD_BUFF_IDX      3
+#define SPWM_PORTE_BUFF_IDX      4
+#define SPWM_PORTF_BUFF_IDX      5
+#define SPWM_PORTG_BUFF_IDX      6
+#define SPWM_PORTH_BUFF_IDX      7
 #endif
 
-#if __IS_PORT_USED(PORTB)
-    #warning SPWM on PORTB configured
-#endif
-
-#ifdef PORTC
-    #if __IS_PORT_USED(PORTC)
-        #warning SPWM on PORTC configured
-    #endif
-#endif
-
-#ifdef PORTD
-    #if __IS_PORT_USED(PORTD)
-        #warning SPWM on PORTD configured
-    #endif
-#endif
-
-#ifdef PORTE
-    #if __IS_PORT_USED(PORTE)
-        #warning SPWM on PORTE configured
-    #endif
-#endif
-
-#ifdef PORTF
-    #if __IS_PORT_USED(PORTF)
-        #warning SPWM on PORTF configured
-    #endif
-#endif
-
-#ifdef PORTG
-    #if __IS_PORT_USED(PORTG)
-        #warning SPWM on PORTG configured
-    #endif
-#endif
-
-#ifdef PORTH
-    #if __IS_PORT_USED(PORTH)
-        #warning SPWM on PORTH configured
-    #endif
-#endif
 
 #if (SPWM_MODE==SPWM_MODE_NON_INVERTING)
     #warning None Inverting PWM mode activated
@@ -97,11 +51,43 @@
     #error SPWM channel count is not correct
 #endif
 
-#if SPWM_TOP_VAL > 255 && SPWM_TOP_VAL < 65536
-    uint16_t spwm_duty_cycle_buff[SPWM_MAX_CHANNEL_NUM] = {0};
-#else
-    uint8_t spwm_duty_cycle_buff[SPWM_MAX_CHANNEL_NUM] = {0};
+#if SPWM_USE_PORT_BUFFERING
+    #warning Port buffering is enabled
+    #if SPWM_PORTA_USED
+        #warning SPWM PORTA USED
+    #endif
+    #if SPWM_PORTB_USED
+        #warning SPWM PORTB USED
+    #endif
+    #if SPWM_PORTC_USED
+        #warning SPWM PORTC USED
+    #endif
+    #if SPWM_PORTD_USED
+        #warning SPWM PORTD USED
+    #endif
+    #if SPWM_PORTE_USED
+        #warning SPWM PORTE USED
+    #endif
+    #if SPWM_PORTF_USED
+        #warning SPWM PORTF USED
+    #endif
+    #if SPWM_PORTG_USED
+        #warning SPWM PORTG USED
+    #endif
+    #if SPWM_PORTH_USED
+        #warning SPWM PORTH USED
+    #endif
 #endif
-extern spwm_duty_cycle_buff[SPWM_MAX_CHANNEL_NUM];
+
+
+#if SPWM_TOP_VAL > 255 && SPWM_TOP_VAL < 65536
+    extern volatile uint16_t spwm_duty_cycle_buff[SPWM_MAX_CHANNEL_NUM];
+#else
+    extern volatile uint8_t spwm_duty_cycle_buff[SPWM_MAX_CHANNEL_NUM];
+#endif
+// extern spwm_duty_cycle_buff[SPWM_MAX_CHANNEL_NUM];
+
+void spwm_init(uint16_t en_state);
+void spwm_tick();
 
 #endif

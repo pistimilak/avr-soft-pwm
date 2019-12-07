@@ -1,4 +1,4 @@
-GAS LISTING /tmp/ccwrTK8o.s 			page 1
+GAS LISTING /tmp/cc8izcMM.s 			page 1
 
 
    1               		.file	"sin.c"
@@ -58,7 +58,7 @@ GAS LISTING /tmp/ccwrTK8o.s 			page 1
   57 002a BE        		.byte	-66
   58 002b C0        		.byte	-64
   59 002c C1        		.byte	-63
-GAS LISTING /tmp/ccwrTK8o.s 			page 2
+GAS LISTING /tmp/cc8izcMM.s 			page 2
 
 
   60 002d C2        		.byte	-62
@@ -118,7 +118,7 @@ GAS LISTING /tmp/ccwrTK8o.s 			page 1
  114 0063 F7        		.byte	-9
  115 0064 F8        		.byte	-8
  116 0065 F8        		.byte	-8
-GAS LISTING /tmp/ccwrTK8o.s 			page 3
+GAS LISTING /tmp/cc8izcMM.s 			page 3
 
 
  117 0066 F9        		.byte	-7
@@ -178,7 +178,7 @@ GAS LISTING /tmp/ccwrTK8o.s 			page 1
  171 009c F8        		.byte	-8
  172 009d F7        		.byte	-9
  173 009e F6        		.byte	-10
-GAS LISTING /tmp/ccwrTK8o.s 			page 4
+GAS LISTING /tmp/cc8izcMM.s 			page 4
 
 
  174 009f F6        		.byte	-10
@@ -238,7 +238,7 @@ GAS LISTING /tmp/ccwrTK8o.s 			page 1
  228 00d5 C0        		.byte	-64
  229 00d6 BE        		.byte	-66
  230 00d7 BD        		.byte	-67
-GAS LISTING /tmp/ccwrTK8o.s 			page 5
+GAS LISTING /tmp/cc8izcMM.s 			page 5
 
 
  231 00d8 BC        		.byte	-68
@@ -298,7 +298,7 @@ GAS LISTING /tmp/ccwrTK8o.s 			page 1
  285 010e 6A        		.byte	106
  286 010f 68        		.byte	104
  287 0110 67        		.byte	103
-GAS LISTING /tmp/ccwrTK8o.s 			page 6
+GAS LISTING /tmp/cc8izcMM.s 			page 6
 
 
  288 0111 65        		.byte	101
@@ -358,7 +358,7 @@ GAS LISTING /tmp/ccwrTK8o.s 			page 1
  342 0147 1E        		.byte	30
  343 0148 1D        		.byte	29
  344 0149 1C        		.byte	28
-GAS LISTING /tmp/ccwrTK8o.s 			page 7
+GAS LISTING /tmp/cc8izcMM.s 			page 7
 
 
  345 014a 1B        		.byte	27
@@ -418,7 +418,7 @@ GAS LISTING /tmp/ccwrTK8o.s 			page 1
  399 0180 00        		.byte	0
  400 0181 00        		.byte	0
  401 0182 00        		.byte	0
-GAS LISTING /tmp/ccwrTK8o.s 			page 8
+GAS LISTING /tmp/cc8izcMM.s 			page 8
 
 
  402 0183 00        		.byte	0
@@ -478,7 +478,7 @@ GAS LISTING /tmp/ccwrTK8o.s 			page 1
  456 01b9 1E        		.byte	30
  457 01ba 1F        		.byte	31
  458 01bb 20        		.byte	32
-GAS LISTING /tmp/ccwrTK8o.s 			page 9
+GAS LISTING /tmp/cc8izcMM.s 			page 9
 
 
  459 01bc 21        		.byte	33
@@ -538,7 +538,7 @@ GAS LISTING /tmp/ccwrTK8o.s 			page 1
  513 01f2 6A        		.byte	106
  514 01f3 6B        		.byte	107
  515 01f4 6D        		.byte	109
-GAS LISTING /tmp/ccwrTK8o.s 			page 10
+GAS LISTING /tmp/cc8izcMM.s 			page 10
 
 
  516 01f5 6E        		.byte	110
@@ -556,17 +556,17 @@ GAS LISTING /tmp/ccwrTK8o.s 			page 1
  528               	.Letext0:
  529               		.file 1 "/usr/lib/avr/include/stdint.h"
  530               		.file 2 "src/sin.c"
-GAS LISTING /tmp/ccwrTK8o.s 			page 11
+GAS LISTING /tmp/cc8izcMM.s 			page 11
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 sin.c
-     /tmp/ccwrTK8o.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/ccwrTK8o.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/ccwrTK8o.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/ccwrTK8o.s:5      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccwrTK8o.s:6      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccwrTK8o.s:14     .rodata.sin_signal:0000000000000000 sin_signal
+     /tmp/cc8izcMM.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/cc8izcMM.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/cc8izcMM.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/cc8izcMM.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/cc8izcMM.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/cc8izcMM.s:14     .rodata.sin_signal:0000000000000000 sin_signal
 
 UNDEFINED SYMBOLS
 __do_copy_data

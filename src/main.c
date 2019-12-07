@@ -6,7 +6,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
-
+#include "soft_pwm.h"
 
 
 
@@ -37,15 +37,14 @@ int main(void)
         _delay_ms(1000);
     }
 #else
-    spwm_en_state = 0xffff;
-    spwm_init();
-
+    // spwm_en_state = 0xffff;
+    spwm_init(0x0001);
     spwm_set_ch(0, 127);
     spwm_set_ch(1, 24);
     spwm_set_ch(2, 78);
     spwm_set_ch(3, 200);
     spwm_set_ch(4, 180);
-    spwm_set_ch(5, 0);
+    spwm_set_ch(5, 128);
     spwm_set_ch(6, 54);
     spwm_set_ch(7, 90);
     spwm_set_ch(8, 0);
@@ -58,6 +57,7 @@ int main(void)
 
     while(1) {
         spwm_tick();
+        // _delay_ms(2);
     }
 #endif
 

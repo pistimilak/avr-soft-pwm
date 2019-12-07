@@ -1,4 +1,4 @@
-GAS LISTING /tmp/ccUvCT6m.s 			page 1
+GAS LISTING /tmp/ccpYscpI.s 			page 1
 
 
    1               		.file	"sig.c"
@@ -58,7 +58,7 @@ GAS LISTING /tmp/ccUvCT6m.s 			page 1
   39               	/* prologue: function */
   40               	/* frame size = 16 */
   41               	/* stack size = 18 */
-GAS LISTING /tmp/ccUvCT6m.s 			page 2
+GAS LISTING /tmp/ccpYscpI.s 			page 2
 
 
   42               	.L__stack_usage = 18
@@ -118,7 +118,7 @@ GAS LISTING /tmp/ccUvCT6m.s 			page 1
   89 005a 0FBE      		out __SREG__,__tmp_reg__
   90 005c CDBF      		out __SP_L__,r28
   91 005e DF91      		pop r29
-GAS LISTING /tmp/ccUvCT6m.s 			page 3
+GAS LISTING /tmp/ccpYscpI.s 			page 3
 
 
   92 0060 CF91      		pop r28
@@ -178,7 +178,7 @@ GAS LISTING /tmp/ccUvCT6m.s 			page 1
  142               	sig_get_val:
  143               	.LFB2:
   32:src/sig.c     **** 
-GAS LISTING /tmp/ccUvCT6m.s 			page 4
+GAS LISTING /tmp/ccpYscpI.s 			page 4
 
 
   33:src/sig.c     **** }
@@ -212,19 +212,19 @@ GAS LISTING /tmp/ccUvCT6m.s 			page 1
  166               		.file 2 "/usr/lib/avr/include/stdint.h"
  167               		.file 3 "inc/sig_config.h"
  168               		.file 4 "inc/sig.h"
-GAS LISTING /tmp/ccUvCT6m.s 			page 5
+GAS LISTING /tmp/ccpYscpI.s 			page 5
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 sig.c
-     /tmp/ccUvCT6m.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/ccUvCT6m.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/ccUvCT6m.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/ccUvCT6m.s:5      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccUvCT6m.s:6      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccUvCT6m.s:13     .text.sig_init:0000000000000000 sig_init
-     /tmp/ccUvCT6m.s:100    .text.sig_tick:0000000000000000 sig_tick
-     /tmp/ccUvCT6m.s:142    .text.sig_get_val:0000000000000000 sig_get_val
+     /tmp/ccpYscpI.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccpYscpI.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccpYscpI.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccpYscpI.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccpYscpI.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccpYscpI.s:13     .text.sig_init:0000000000000000 sig_init
+     /tmp/ccpYscpI.s:100    .text.sig_tick:0000000000000000 sig_tick
+     /tmp/ccpYscpI.s:142    .text.sig_get_val:0000000000000000 sig_get_val
 
 UNDEFINED SYMBOLS
 __udivmodhi4
