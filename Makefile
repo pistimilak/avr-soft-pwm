@@ -9,8 +9,10 @@
 PROJECT = avr-soft-pwm
 TARGET = atmega328p
 PROG_SOFT = avrdude
-PROG_DEV = arduino
-DEV_PORT = /dev/ttyACM0
+# PROG_DEV = arduino
+# DEV_PORT = /dev/ttyACM0
+PROG_DEV = avrispmkii
+DEV_PORT = usb
 
 
 ######################################

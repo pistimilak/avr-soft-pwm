@@ -1,4 +1,4 @@
-GAS LISTING /tmp/ccbqDSDv.s 			page 1
+GAS LISTING /tmp/ccyuH0Xn.s 			page 1
 
 
    1               		.file	"soft_pwm.c"
@@ -17,7 +17,7 @@ GAS LISTING /tmp/ccbqDSDv.s 			page 1
   15               		.file 1 "src/soft_pwm.c"
    1:src/soft_pwm.c **** /**
    2:src/soft_pwm.c ****  * @file soft_pwm.c
-   3:src/soft_pwm.c ****  * @author your name (you@domain.com)
+   3:src/soft_pwm.c ****  * @author Istvan Milak (istvan.milak@gmail.com)
    4:src/soft_pwm.c ****  * @brief 
    5:src/soft_pwm.c ****  * @version 0.1
    6:src/soft_pwm.c ****  * @date 2019-12-07
@@ -32,49 +32,77 @@ GAS LISTING /tmp/ccbqDSDv.s 			page 1
   15:src/soft_pwm.c **** #else
   16:src/soft_pwm.c ****     volatile uint8_t spwm_duty_cycle_buff[SPWM_MAX_CHANNEL_NUM] = {0};
   17:src/soft_pwm.c **** #endif
-  18:src/soft_pwm.c **** static volatile uint16_t spwm_tick_cnt = 0;
-  19:src/soft_pwm.c **** static volatile  uint16_t spwm_en_state = 0;
-  20:src/soft_pwm.c **** 
-  21:src/soft_pwm.c **** #if SPWM_USE_PORT_BUFFERING
-  22:src/soft_pwm.c **** /*Buffering port, if used*/
-  23:src/soft_pwm.c **** /*A, B, C, D, E, F, G, H*/
-  24:src/soft_pwm.c **** static volatile uint8_t spwm_port_buff[SPWM_MAX_PORT_NUM] = {0};
-  25:src/soft_pwm.c **** #endif
-  26:src/soft_pwm.c **** 
-  27:src/soft_pwm.c **** void spwm_init(uint16_t en_state)
-  28:src/soft_pwm.c **** {
-  16               		.loc 1 28 0
+  18:src/soft_pwm.c **** 
+  19:src/soft_pwm.c **** static volatile uint16_t spwm_tick_cnt = 0;
+  20:src/soft_pwm.c **** volatile uint16_t spwm_en_state;
+  21:src/soft_pwm.c **** 
+  22:src/soft_pwm.c **** #if SPWM_USE_PORT_BUFFERING
+  23:src/soft_pwm.c **** /*Buffering port, if used*/
+  24:src/soft_pwm.c **** /*A, B, C, D, E, F, G, H*/
+  25:src/soft_pwm.c **** static volatile uint8_t spwm_port_buff[SPWM_MAX_PORT_NUM] = {0};
+  26:src/soft_pwm.c **** #endif
+  27:src/soft_pwm.c **** 
+  28:src/soft_pwm.c **** 
+  29:src/soft_pwm.c **** 
+  30:src/soft_pwm.c **** #if SPWM_USE_PORT_BUFFERING
+  31:src/soft_pwm.c ****     #if SPWM_MODE == SPWM_MODE_NON_INVERTING
+  32:src/soft_pwm.c ****         #define __set_outp(port_buff, port, ch_outp, ch_id)        port_buff = spwm_get_port_buff(&
+  33:src/soft_pwm.c ****                                                                     *port_buff = ((spwm_en_state & 
+  34:src/soft_pwm.c ****                                                                     (*port_buff | (1 << ch_outp)) :
+  35:src/soft_pwm.c ****     #else
+  36:src/soft_pwm.c ****         #define __set_outp(port_buff, port, ch_outp, ch_id)        port_buff = spwm_get_port_buff(&
+  37:src/soft_pwm.c ****                                                                     *port_buff = ((spwm_en_state & 
+  38:src/soft_pwm.c ****                                                                     (*port_buff | (1 << ch_outp)) :
+  39:src/soft_pwm.c ****     #endif
+  40:src/soft_pwm.c **** #else
+  41:src/soft_pwm.c ****     #if SPWM_MODE == SPWM_MODE_NON_INVERTING
+  42:src/soft_pwm.c ****         #define __set_outp(port, ch_outp, ch_id)                   port = ((spwm_en_state & (0x0001
+  43:src/soft_pwm.c ****                                                                     (port | (1 << ch_outp)) : (port
+GAS LISTING /tmp/ccyuH0Xn.s 			page 2
+
+
+  44:src/soft_pwm.c ****     #else
+  45:src/soft_pwm.c ****         #define __set_outp(port, ch_outp, ch_id)                   port = ((spwm_en_state & (0x0001
+  46:src/soft_pwm.c ****                                                                     (port | (1 << ch_outp)) : (port
+  47:src/soft_pwm.c ****     #endif
+  48:src/soft_pwm.c **** #endif
+  49:src/soft_pwm.c **** 
+  50:src/soft_pwm.c **** /**
+  51:src/soft_pwm.c ****  * @brief 
+  52:src/soft_pwm.c ****  * 
+  53:src/soft_pwm.c ****  * @param en_state 
+  54:src/soft_pwm.c ****  */
+  55:src/soft_pwm.c **** void spwm_init(uint16_t en_state)
+  56:src/soft_pwm.c **** {
+  16               		.loc 1 56 0
   17               		.cfi_startproc
   18               	.LVL0:
   19               	/* prologue: function */
   20               	/* frame size = 0 */
   21               	/* stack size = 0 */
   22               	.L__stack_usage = 0
-  29:src/soft_pwm.c ****     //reset values
-  30:src/soft_pwm.c ****     spwm_en_state = en_state;
-  23               		.loc 1 30 0
+  57:src/soft_pwm.c ****     //reset values
+  58:src/soft_pwm.c ****     spwm_en_state = en_state;
+  23               		.loc 1 58 0
   24 0000 9093 0000 		sts spwm_en_state+1,r25
   25 0004 8093 0000 		sts spwm_en_state,r24
-  31:src/soft_pwm.c ****     spwm_tick_cnt = 0;
-  26               		.loc 1 31 0
+  59:src/soft_pwm.c ****     spwm_tick_cnt = 0;
+  26               		.loc 1 59 0
   27 0008 1092 0000 		sts spwm_tick_cnt+1,__zero_reg__
-GAS LISTING /tmp/ccbqDSDv.s 			page 2
-
-
   28 000c 1092 0000 		sts spwm_tick_cnt,__zero_reg__
   29               	.LVL1:
-  32:src/soft_pwm.c ****     uint8_t i;
-  33:src/soft_pwm.c **** #if SPWM_USE_PORT_BUFFERING
-  34:src/soft_pwm.c ****     for(i = 0; i < SPWM_MAX_PORT_NUM; spwm_port_buff[i] = 0, i++);
-  35:src/soft_pwm.c **** #endif
-  36:src/soft_pwm.c ****     for(i = 0; i < SPWM_MAX_CHANNEL_NUM; spwm_duty_cycle_buff[i] = 0, i++);
-  30               		.loc 1 36 0
+  60:src/soft_pwm.c ****     uint8_t i;
+  61:src/soft_pwm.c **** #if SPWM_USE_PORT_BUFFERING
+  62:src/soft_pwm.c ****     for(i = 0; i < SPWM_MAX_PORT_NUM; spwm_port_buff[i] = 0, i++);
+  63:src/soft_pwm.c **** #endif
+  64:src/soft_pwm.c ****     for(i = 0; i < SPWM_MAX_CHANNEL_NUM; spwm_duty_cycle_buff[i] = 0, i++);
+  30               		.loc 1 64 0
   31 0010 80E0      		ldi r24,0
   32               	.LVL2:
   33 0012 00C0      		rjmp .L2
   34               	.LVL3:
   35               	.L3:
-  36               		.loc 1 36 0 is_stmt 0 discriminator 3
+  36               		.loc 1 64 0 is_stmt 0 discriminator 3
   37 0014 E82F      		mov r30,r24
   38 0016 F0E0      		ldi r31,0
   39 0018 E050      		subi r30,lo8(-(spwm_duty_cycle_buff))
@@ -83,196 +111,199 @@ GAS LISTING /tmp/ccbqDSDv.s 			page 1
   42 001e 8F5F      		subi r24,lo8(-(1))
   43               	.LVL4:
   44               	.L2:
-  45               		.loc 1 36 0 discriminator 1
+  45               		.loc 1 64 0 discriminator 1
   46 0020 8031      		cpi r24,lo8(16)
   47 0022 00F0      		brlo .L3
-  37:src/soft_pwm.c **** 
-  38:src/soft_pwm.c ****     // init DDR
-  39:src/soft_pwm.c ****     if(spwm_en_state & (1 << SPWM_CH0_ID)) SPWM_CH0_DDR |= (1 << SPWM_CH0);
-  48               		.loc 1 39 0 is_stmt 1
+  65:src/soft_pwm.c **** 
+  66:src/soft_pwm.c ****     // init DDR
+  67:src/soft_pwm.c ****     if(spwm_en_state & (0x0001 << SPWM_CH0_ID)) SPWM_CH0_DDR |= (1 << SPWM_CH0);
+  48               		.loc 1 67 0 is_stmt 1
+GAS LISTING /tmp/ccyuH0Xn.s 			page 3
+
+
   49 0024 8091 0000 		lds r24,spwm_en_state
   50 0028 9091 0000 		lds r25,spwm_en_state+1
   51               	.LVL5:
   52 002c 80FF      		sbrs r24,0
   53 002e 00C0      		rjmp .L4
-  54               		.loc 1 39 0 is_stmt 0 discriminator 1
-  55 0030 84B1      		in r24,0x4
+  54               		.loc 1 67 0 is_stmt 0 discriminator 1
+  55 0030 8AB1      		in r24,0xa
   56 0032 8160      		ori r24,lo8(1)
-  57 0034 84B9      		out 0x4,r24
+  57 0034 8AB9      		out 0xa,r24
   58               	.L4:
-  40:src/soft_pwm.c ****     if(spwm_en_state & (1 << SPWM_CH1_ID)) SPWM_CH1_DDR |= (1 << SPWM_CH1);
-  59               		.loc 1 40 0 is_stmt 1
+  68:src/soft_pwm.c ****     if(spwm_en_state & (0x0001 << SPWM_CH1_ID)) SPWM_CH1_DDR |= (1 << SPWM_CH1);
+  59               		.loc 1 68 0 is_stmt 1
   60 0036 8091 0000 		lds r24,spwm_en_state
   61 003a 9091 0000 		lds r25,spwm_en_state+1
   62 003e 81FF      		sbrs r24,1
   63 0040 00C0      		rjmp .L5
-  64               		.loc 1 40 0 is_stmt 0 discriminator 1
-  65 0042 84B1      		in r24,0x4
+  64               		.loc 1 68 0 is_stmt 0 discriminator 1
+  65 0042 8AB1      		in r24,0xa
   66 0044 8260      		ori r24,lo8(2)
-  67 0046 84B9      		out 0x4,r24
+  67 0046 8AB9      		out 0xa,r24
   68               	.L5:
-  41:src/soft_pwm.c ****     if(spwm_en_state & (1 << SPWM_CH2_ID)) SPWM_CH2_DDR |= (1 << SPWM_CH2);
-  69               		.loc 1 41 0 is_stmt 1
+  69:src/soft_pwm.c ****     if(spwm_en_state & (0x0001 << SPWM_CH2_ID)) SPWM_CH2_DDR |= (1 << SPWM_CH2);
+  69               		.loc 1 69 0 is_stmt 1
   70 0048 8091 0000 		lds r24,spwm_en_state
   71 004c 9091 0000 		lds r25,spwm_en_state+1
   72 0050 82FF      		sbrs r24,2
   73 0052 00C0      		rjmp .L6
-  74               		.loc 1 41 0 is_stmt 0 discriminator 1
-GAS LISTING /tmp/ccbqDSDv.s 			page 3
-
-
-  75 0054 84B1      		in r24,0x4
+  74               		.loc 1 69 0 is_stmt 0 discriminator 1
+  75 0054 8AB1      		in r24,0xa
   76 0056 8460      		ori r24,lo8(4)
-  77 0058 84B9      		out 0x4,r24
+  77 0058 8AB9      		out 0xa,r24
   78               	.L6:
-  42:src/soft_pwm.c ****     if(spwm_en_state & (1 << SPWM_CH3_ID)) SPWM_CH3_DDR |= (1 << SPWM_CH3);
-  79               		.loc 1 42 0 is_stmt 1
+  70:src/soft_pwm.c ****     if(spwm_en_state & (0x0001 << SPWM_CH3_ID)) SPWM_CH3_DDR |= (1 << SPWM_CH3);
+  79               		.loc 1 70 0 is_stmt 1
   80 005a 8091 0000 		lds r24,spwm_en_state
   81 005e 9091 0000 		lds r25,spwm_en_state+1
   82 0062 83FF      		sbrs r24,3
   83 0064 00C0      		rjmp .L7
-  84               		.loc 1 42 0 is_stmt 0 discriminator 1
-  85 0066 84B1      		in r24,0x4
+  84               		.loc 1 70 0 is_stmt 0 discriminator 1
+  85 0066 8AB1      		in r24,0xa
   86 0068 8860      		ori r24,lo8(8)
-  87 006a 84B9      		out 0x4,r24
+  87 006a 8AB9      		out 0xa,r24
   88               	.L7:
-  43:src/soft_pwm.c ****     if(spwm_en_state & (1 << SPWM_CH4_ID)) SPWM_CH4_DDR |= (1 << SPWM_CH4);
-  89               		.loc 1 43 0 is_stmt 1
+  71:src/soft_pwm.c ****     if(spwm_en_state & (0x0001 << SPWM_CH4_ID)) SPWM_CH4_DDR |= (1 << SPWM_CH4);
+  89               		.loc 1 71 0 is_stmt 1
   90 006c 8091 0000 		lds r24,spwm_en_state
   91 0070 9091 0000 		lds r25,spwm_en_state+1
   92 0074 84FF      		sbrs r24,4
   93 0076 00C0      		rjmp .L8
-  94               		.loc 1 43 0 is_stmt 0 discriminator 1
-  95 0078 84B1      		in r24,0x4
+  94               		.loc 1 71 0 is_stmt 0 discriminator 1
+  95 0078 8AB1      		in r24,0xa
   96 007a 8061      		ori r24,lo8(16)
-  97 007c 84B9      		out 0x4,r24
+  97 007c 8AB9      		out 0xa,r24
   98               	.L8:
-  44:src/soft_pwm.c ****     if(spwm_en_state & (1 << SPWM_CH5_ID)) SPWM_CH5_DDR |= (1 << SPWM_CH5);
-  99               		.loc 1 44 0 is_stmt 1
+  72:src/soft_pwm.c ****     if(spwm_en_state & (0x0001 << SPWM_CH5_ID)) SPWM_CH5_DDR |= (1 << SPWM_CH5);
+  99               		.loc 1 72 0 is_stmt 1
  100 007e 8091 0000 		lds r24,spwm_en_state
+GAS LISTING /tmp/ccyuH0Xn.s 			page 4
+
+
  101 0082 9091 0000 		lds r25,spwm_en_state+1
  102 0086 85FF      		sbrs r24,5
  103 0088 00C0      		rjmp .L9
- 104               		.loc 1 44 0 is_stmt 0 discriminator 1
- 105 008a 84B1      		in r24,0x4
+ 104               		.loc 1 72 0 is_stmt 0 discriminator 1
+ 105 008a 8AB1      		in r24,0xa
  106 008c 8062      		ori r24,lo8(32)
- 107 008e 84B9      		out 0x4,r24
+ 107 008e 8AB9      		out 0xa,r24
  108               	.L9:
-  45:src/soft_pwm.c ****     if(spwm_en_state & (1 << SPWM_CH6_ID)) SPWM_CH6_DDR |= (1 << SPWM_CH6);
- 109               		.loc 1 45 0 is_stmt 1
+  73:src/soft_pwm.c ****     if(spwm_en_state & (0x0001 << SPWM_CH6_ID)) SPWM_CH6_DDR |= (1 << SPWM_CH6);
+ 109               		.loc 1 73 0 is_stmt 1
  110 0090 8091 0000 		lds r24,spwm_en_state
  111 0094 9091 0000 		lds r25,spwm_en_state+1
  112 0098 86FF      		sbrs r24,6
  113 009a 00C0      		rjmp .L10
- 114               		.loc 1 45 0 is_stmt 0 discriminator 1
- 115 009c 84B1      		in r24,0x4
+ 114               		.loc 1 73 0 is_stmt 0 discriminator 1
+ 115 009c 8AB1      		in r24,0xa
  116 009e 8064      		ori r24,lo8(64)
- 117 00a0 84B9      		out 0x4,r24
+ 117 00a0 8AB9      		out 0xa,r24
  118               	.L10:
-  46:src/soft_pwm.c ****     if(spwm_en_state & (1 << SPWM_CH7_ID)) SPWM_CH7_DDR |= (1 << SPWM_CH7);
- 119               		.loc 1 46 0 is_stmt 1
+  74:src/soft_pwm.c ****     if(spwm_en_state & (0x0001 << SPWM_CH7_ID)) SPWM_CH7_DDR |= (1 << SPWM_CH7);
+ 119               		.loc 1 74 0 is_stmt 1
  120 00a2 8091 0000 		lds r24,spwm_en_state
  121 00a6 9091 0000 		lds r25,spwm_en_state+1
  122 00aa 87FF      		sbrs r24,7
  123 00ac 00C0      		rjmp .L11
- 124               		.loc 1 46 0 is_stmt 0 discriminator 1
- 125 00ae 84B1      		in r24,0x4
+ 124               		.loc 1 74 0 is_stmt 0 discriminator 1
+ 125 00ae 8AB1      		in r24,0xa
  126 00b0 8068      		ori r24,lo8(-128)
-GAS LISTING /tmp/ccbqDSDv.s 			page 4
-
-
- 127 00b2 84B9      		out 0x4,r24
+ 127 00b2 8AB9      		out 0xa,r24
  128               	.L11:
-  47:src/soft_pwm.c ****     if(spwm_en_state & (1 << SPWM_CH8_ID)) SPWM_CH8_DDR |= (1 << SPWM_CH8);
- 129               		.loc 1 47 0 is_stmt 1
+  75:src/soft_pwm.c ****     if(spwm_en_state & (0x0001 << SPWM_CH8_ID)) SPWM_CH8_DDR |= (1 << SPWM_CH8);
+ 129               		.loc 1 75 0 is_stmt 1
  130 00b4 8091 0000 		lds r24,spwm_en_state
  131 00b8 9091 0000 		lds r25,spwm_en_state+1
  132 00bc 90FF      		sbrs r25,0
  133 00be 00C0      		rjmp .L12
- 134               		.loc 1 47 0 is_stmt 0 discriminator 1
- 135 00c0 8AB1      		in r24,0xa
+ 134               		.loc 1 75 0 is_stmt 0 discriminator 1
+ 135 00c0 84B1      		in r24,0x4
  136 00c2 8160      		ori r24,lo8(1)
- 137 00c4 8AB9      		out 0xa,r24
+ 137 00c4 84B9      		out 0x4,r24
  138               	.L12:
-  48:src/soft_pwm.c ****     if(spwm_en_state & (1 << SPWM_CH9_ID)) SPWM_CH9_DDR |= (1 << SPWM_CH9);
- 139               		.loc 1 48 0 is_stmt 1
+  76:src/soft_pwm.c ****     if(spwm_en_state & (0x0001 << SPWM_CH9_ID)) SPWM_CH9_DDR |= (1 << SPWM_CH9);
+ 139               		.loc 1 76 0 is_stmt 1
  140 00c6 8091 0000 		lds r24,spwm_en_state
  141 00ca 9091 0000 		lds r25,spwm_en_state+1
  142 00ce 91FF      		sbrs r25,1
  143 00d0 00C0      		rjmp .L13
- 144               		.loc 1 48 0 is_stmt 0 discriminator 1
- 145 00d2 8AB1      		in r24,0xa
+ 144               		.loc 1 76 0 is_stmt 0 discriminator 1
+ 145 00d2 84B1      		in r24,0x4
  146 00d4 8260      		ori r24,lo8(2)
- 147 00d6 8AB9      		out 0xa,r24
+ 147 00d6 84B9      		out 0x4,r24
  148               	.L13:
-  49:src/soft_pwm.c ****     if(spwm_en_state & (1 << SPWM_CH10_ID)) SPWM_CH10_DDR |= (1 << SPWM_CH10);
- 149               		.loc 1 49 0 is_stmt 1
+  77:src/soft_pwm.c ****     if(spwm_en_state & (0x0001 << SPWM_CH10_ID)) SPWM_CH10_DDR |= (1 << SPWM_CH10);
+ 149               		.loc 1 77 0 is_stmt 1
  150 00d8 8091 0000 		lds r24,spwm_en_state
  151 00dc 9091 0000 		lds r25,spwm_en_state+1
  152 00e0 92FF      		sbrs r25,2
+GAS LISTING /tmp/ccyuH0Xn.s 			page 5
+
+
  153 00e2 00C0      		rjmp .L14
- 154               		.loc 1 49 0 is_stmt 0 discriminator 1
- 155 00e4 8AB1      		in r24,0xa
+ 154               		.loc 1 77 0 is_stmt 0 discriminator 1
+ 155 00e4 84B1      		in r24,0x4
  156 00e6 8460      		ori r24,lo8(4)
- 157 00e8 8AB9      		out 0xa,r24
+ 157 00e8 84B9      		out 0x4,r24
  158               	.L14:
-  50:src/soft_pwm.c ****     if(spwm_en_state & (1 << SPWM_CH11_ID)) SPWM_CH11_DDR |= (1 << SPWM_CH11);
- 159               		.loc 1 50 0 is_stmt 1
+  78:src/soft_pwm.c ****     if(spwm_en_state & (0x0001 << SPWM_CH11_ID)) SPWM_CH11_DDR |= (1 << SPWM_CH11);
+ 159               		.loc 1 78 0 is_stmt 1
  160 00ea 8091 0000 		lds r24,spwm_en_state
  161 00ee 9091 0000 		lds r25,spwm_en_state+1
  162 00f2 93FF      		sbrs r25,3
  163 00f4 00C0      		rjmp .L15
- 164               		.loc 1 50 0 is_stmt 0 discriminator 1
- 165 00f6 8AB1      		in r24,0xa
+ 164               		.loc 1 78 0 is_stmt 0 discriminator 1
+ 165 00f6 84B1      		in r24,0x4
  166 00f8 8860      		ori r24,lo8(8)
- 167 00fa 8AB9      		out 0xa,r24
+ 167 00fa 84B9      		out 0x4,r24
  168               	.L15:
-  51:src/soft_pwm.c ****     if(spwm_en_state & (1 << SPWM_CH12_ID)) SPWM_CH12_DDR |= (1 << SPWM_CH12);
- 169               		.loc 1 51 0 is_stmt 1
+  79:src/soft_pwm.c ****     if(spwm_en_state & (0x0001 << SPWM_CH12_ID)) SPWM_CH12_DDR |= (1 << SPWM_CH12);
+ 169               		.loc 1 79 0 is_stmt 1
  170 00fc 8091 0000 		lds r24,spwm_en_state
  171 0100 9091 0000 		lds r25,spwm_en_state+1
  172 0104 94FF      		sbrs r25,4
  173 0106 00C0      		rjmp .L16
- 174               		.loc 1 51 0 is_stmt 0 discriminator 1
- 175 0108 8AB1      		in r24,0xa
+ 174               		.loc 1 79 0 is_stmt 0 discriminator 1
+ 175 0108 84B1      		in r24,0x4
  176 010a 8061      		ori r24,lo8(16)
- 177 010c 8AB9      		out 0xa,r24
+ 177 010c 84B9      		out 0x4,r24
  178               	.L16:
-GAS LISTING /tmp/ccbqDSDv.s 			page 5
-
-
-  52:src/soft_pwm.c ****     if(spwm_en_state & (1 << SPWM_CH13_ID)) SPWM_CH13_DDR |= (1 << SPWM_CH13);
- 179               		.loc 1 52 0 is_stmt 1
+  80:src/soft_pwm.c ****     if(spwm_en_state & (0x0001 << SPWM_CH13_ID)) SPWM_CH13_DDR |= (1 << SPWM_CH13);
+ 179               		.loc 1 80 0 is_stmt 1
  180 010e 8091 0000 		lds r24,spwm_en_state
  181 0112 9091 0000 		lds r25,spwm_en_state+1
  182 0116 95FF      		sbrs r25,5
  183 0118 00C0      		rjmp .L17
- 184               		.loc 1 52 0 is_stmt 0 discriminator 1
- 185 011a 8AB1      		in r24,0xa
+ 184               		.loc 1 80 0 is_stmt 0 discriminator 1
+ 185 011a 84B1      		in r24,0x4
  186 011c 8062      		ori r24,lo8(32)
- 187 011e 8AB9      		out 0xa,r24
+ 187 011e 84B9      		out 0x4,r24
  188               	.L17:
-  53:src/soft_pwm.c ****     if(spwm_en_state & (1 << SPWM_CH14_ID)) SPWM_CH14_DDR |= (1 << SPWM_CH14);
- 189               		.loc 1 53 0 is_stmt 1
+  81:src/soft_pwm.c ****     if(spwm_en_state & (0x0001 << SPWM_CH14_ID)) SPWM_CH14_DDR |= (1 << SPWM_CH14);
+ 189               		.loc 1 81 0 is_stmt 1
  190 0120 8091 0000 		lds r24,spwm_en_state
  191 0124 9091 0000 		lds r25,spwm_en_state+1
  192 0128 96FF      		sbrs r25,6
  193 012a 00C0      		rjmp .L18
- 194               		.loc 1 53 0 is_stmt 0 discriminator 1
- 195 012c 8AB1      		in r24,0xa
- 196 012e 8064      		ori r24,lo8(64)
- 197 0130 8AB9      		out 0xa,r24
+ 194               		.loc 1 81 0 is_stmt 0 discriminator 1
+ 195 012c 87B1      		in r24,0x7
+ 196 012e 8061      		ori r24,lo8(16)
+ 197 0130 87B9      		out 0x7,r24
  198               	.L18:
-  54:src/soft_pwm.c ****     if(spwm_en_state & (1 << SPWM_CH15_ID)) SPWM_CH15_DDR |= (1 << SPWM_CH15);
- 199               		.loc 1 54 0 is_stmt 1
+  82:src/soft_pwm.c ****     if(spwm_en_state & (0x0001 << SPWM_CH15_ID)) SPWM_CH15_DDR |= (1 << SPWM_CH15);
+ 199               		.loc 1 82 0 is_stmt 1
  200 0132 8091 0000 		lds r24,spwm_en_state
  201 0136 9091 0000 		lds r25,spwm_en_state+1
  202 013a 9923      		tst r25
  203 013c 04F4      		brge .L1
- 204               		.loc 1 54 0 is_stmt 0 discriminator 1
- 205 013e 8AB1      		in r24,0xa
- 206 0140 8068      		ori r24,lo8(-128)
- 207 0142 8AB9      		out 0xa,r24
+ 204               		.loc 1 82 0 is_stmt 0 discriminator 1
+GAS LISTING /tmp/ccyuH0Xn.s 			page 6
+
+
+ 205 013e 87B1      		in r24,0x7
+ 206 0140 8062      		ori r24,lo8(32)
+ 207 0142 87B9      		out 0x7,r24
  208               	.L1:
  209 0144 0895      		ret
  210               		.cfi_endproc
@@ -281,222 +312,206 @@ GAS LISTING /tmp/ccbqDSDv.s 			page 1
  214               	.global	spwm_tick
  216               	spwm_tick:
  217               	.LFB1:
-  55:src/soft_pwm.c **** }
-  56:src/soft_pwm.c **** 
-  57:src/soft_pwm.c **** #if SPWM_USE_PORT_BUFFERING
-  58:src/soft_pwm.c **** static uint8_t* spwm_get_port_buff(volatile uint8_t *port) 
-  59:src/soft_pwm.c **** {
-  60:src/soft_pwm.c ****     switch ((uint16_t)port) {
-  61:src/soft_pwm.c **** #ifdef PORTA
-  62:src/soft_pwm.c ****         case (uint16_t)(&PORTA):
-  63:src/soft_pwm.c ****             return (uint8_t*)&spwm_port_buff[SPWM_PORTA_BUFF_IDX];
-  64:src/soft_pwm.c **** #endif
-  65:src/soft_pwm.c **** #ifdef PORTB
-  66:src/soft_pwm.c ****         case (uint16_t)(&PORTB):
-  67:src/soft_pwm.c ****             return (uint8_t*)&spwm_port_buff[SPWM_PORTB_BUFF_IDX];
-  68:src/soft_pwm.c **** #endif
-  69:src/soft_pwm.c **** #ifdef PORTC
-  70:src/soft_pwm.c ****         case (uint16_t)(&PORTC):
-  71:src/soft_pwm.c ****             return (uint8_t*)&spwm_port_buff[SPWM_PORTC_BUFF_IDX];
-GAS LISTING /tmp/ccbqDSDv.s 			page 6
-
-
-  72:src/soft_pwm.c **** #endif
-  73:src/soft_pwm.c **** #ifdef PORTD
-  74:src/soft_pwm.c ****         case (uint16_t)(&PORTD):
-  75:src/soft_pwm.c ****             return (uint8_t*)&spwm_port_buff[SPWM_PORTD_BUFF_IDX];
-  76:src/soft_pwm.c **** #endif
-  77:src/soft_pwm.c **** #ifdef PORTE
-  78:src/soft_pwm.c ****         case (uint16_t)(&PORTE):
-  79:src/soft_pwm.c ****             return (uint8_t*)&spwm_port_buff[SPWM_PORTE_BUFF_IDX];
-  80:src/soft_pwm.c **** #endif
-  81:src/soft_pwm.c **** #ifdef PORTF
-  82:src/soft_pwm.c ****         case (uint16_t)(&PORTF):
-  83:src/soft_pwm.c ****             return (uint8_t*)&spwm_port_buff[SPWM_PORTF_BUFF_IDX];
-  84:src/soft_pwm.c **** #endif
-  85:src/soft_pwm.c **** #ifdef PORTG
-  86:src/soft_pwm.c ****         case (uint16_t)(&PORTG):
-  87:src/soft_pwm.c ****             return (uint8_t*)&spwm_port_buff[SPWM_PORTG_BUFF_IDX];
-  88:src/soft_pwm.c **** #endif
-  89:src/soft_pwm.c **** #ifdef PORTH
-  90:src/soft_pwm.c ****         case (uint16_t)(&PORTH):
-  91:src/soft_pwm.c ****             return (uint8_t*)&spwm_port_buff[SPWM_PORTH_BUFF_IDX];
-  92:src/soft_pwm.c **** #endif
-  93:src/soft_pwm.c ****         default:
-  94:src/soft_pwm.c ****             return (uint8_t *)0;
-  95:src/soft_pwm.c ****     }
-  96:src/soft_pwm.c **** }
-  97:src/soft_pwm.c **** #endif
-  98:src/soft_pwm.c **** 
-  99:src/soft_pwm.c **** 
- 100:src/soft_pwm.c **** #if SPWM_USE_PORT_BUFFERING
- 101:src/soft_pwm.c **** static void spwm_buffering_ports()
- 102:src/soft_pwm.c **** {
- 103:src/soft_pwm.c **** #ifdef PORTA
- 104:src/soft_pwm.c ****     #if SPWM_PORTA_USED
- 105:src/soft_pwm.c ****             spwm_port_buff[SPWM_PORTA_BUFF_IDX] = PORTA;
- 106:src/soft_pwm.c ****     #endif
- 107:src/soft_pwm.c **** #endif
- 108:src/soft_pwm.c **** #ifdef PORTB
- 109:src/soft_pwm.c ****     #if SPWM_PORTB_USED
- 110:src/soft_pwm.c ****             spwm_port_buff[SPWM_PORTB_BUFF_IDX] = PORTB;
- 111:src/soft_pwm.c ****     #endif
- 112:src/soft_pwm.c **** #endif
- 113:src/soft_pwm.c **** #ifdef PORTC
- 114:src/soft_pwm.c ****     #if SPWM_PORTC_USED
- 115:src/soft_pwm.c ****             spwm_port_buff[SPWM_PORTC_BUFF_IDX] = PORTC;
- 116:src/soft_pwm.c ****     #endif
- 117:src/soft_pwm.c **** #endif
- 118:src/soft_pwm.c **** #ifdef PORTD
- 119:src/soft_pwm.c ****     #if SPWM_PORTD_USED
- 120:src/soft_pwm.c ****             spwm_port_buff[SPWM_PORTD_BUFF_IDX] = PORTD;
- 121:src/soft_pwm.c ****     #endif
+  83:src/soft_pwm.c **** }
+  84:src/soft_pwm.c **** 
+  85:src/soft_pwm.c **** #if SPWM_USE_PORT_BUFFERING
+  86:src/soft_pwm.c **** /**
+  87:src/soft_pwm.c ****  * @brief 
+  88:src/soft_pwm.c ****  * 
+  89:src/soft_pwm.c ****  * @param uint8_t 
+  90:src/soft_pwm.c ****  * @return uint8_t* 
+  91:src/soft_pwm.c ****  */
+  92:src/soft_pwm.c **** static uint8_t* spwm_get_port_buff(volatile uint8_t *port) 
+  93:src/soft_pwm.c **** {
+  94:src/soft_pwm.c ****     switch ((uint16_t)port) {
+  95:src/soft_pwm.c **** #ifdef PORTA
+  96:src/soft_pwm.c ****         case (uint16_t)(&PORTA):
+  97:src/soft_pwm.c ****             return (uint8_t*)&spwm_port_buff[SPWM_PORTA_BUFF_IDX];
+  98:src/soft_pwm.c **** #endif
+  99:src/soft_pwm.c **** #ifdef PORTB
+ 100:src/soft_pwm.c ****         case (uint16_t)(&PORTB):
+ 101:src/soft_pwm.c ****             return (uint8_t*)&spwm_port_buff[SPWM_PORTB_BUFF_IDX];
+ 102:src/soft_pwm.c **** #endif
+ 103:src/soft_pwm.c **** #ifdef PORTC
+ 104:src/soft_pwm.c ****         case (uint16_t)(&PORTC):
+ 105:src/soft_pwm.c ****             return (uint8_t*)&spwm_port_buff[SPWM_PORTC_BUFF_IDX];
+ 106:src/soft_pwm.c **** #endif
+ 107:src/soft_pwm.c **** #ifdef PORTD
+ 108:src/soft_pwm.c ****         case (uint16_t)(&PORTD):
+ 109:src/soft_pwm.c ****             return (uint8_t*)&spwm_port_buff[SPWM_PORTD_BUFF_IDX];
+ 110:src/soft_pwm.c **** #endif
+ 111:src/soft_pwm.c **** #ifdef PORTE
+ 112:src/soft_pwm.c ****         case (uint16_t)(&PORTE):
+ 113:src/soft_pwm.c ****             return (uint8_t*)&spwm_port_buff[SPWM_PORTE_BUFF_IDX];
+ 114:src/soft_pwm.c **** #endif
+ 115:src/soft_pwm.c **** #ifdef PORTF
+ 116:src/soft_pwm.c ****         case (uint16_t)(&PORTF):
+ 117:src/soft_pwm.c ****             return (uint8_t*)&spwm_port_buff[SPWM_PORTF_BUFF_IDX];
+ 118:src/soft_pwm.c **** #endif
+ 119:src/soft_pwm.c **** #ifdef PORTG
+ 120:src/soft_pwm.c ****         case (uint16_t)(&PORTG):
+ 121:src/soft_pwm.c ****             return (uint8_t*)&spwm_port_buff[SPWM_PORTG_BUFF_IDX];
  122:src/soft_pwm.c **** #endif
- 123:src/soft_pwm.c **** #ifdef PORTE
- 124:src/soft_pwm.c ****     #if SPWM_PORTE_USED
- 125:src/soft_pwm.c ****             spwm_port_buff[SPWM_PORTE_BUFF_IDX] = PORTE;
- 126:src/soft_pwm.c ****     #endif
- 127:src/soft_pwm.c **** #endif
- 128:src/soft_pwm.c **** #ifdef PORTF
-GAS LISTING /tmp/ccbqDSDv.s 			page 7
+ 123:src/soft_pwm.c **** #ifdef PORTH
+ 124:src/soft_pwm.c ****         case (uint16_t)(&PORTH):
+ 125:src/soft_pwm.c ****             return (uint8_t*)&spwm_port_buff[SPWM_PORTH_BUFF_IDX];
+ 126:src/soft_pwm.c **** #endif
+ 127:src/soft_pwm.c ****         default:
+ 128:src/soft_pwm.c ****             return (uint8_t *)0;
+GAS LISTING /tmp/ccyuH0Xn.s 			page 7
 
 
- 129:src/soft_pwm.c ****     #if SPWM_PORTF_USED
- 130:src/soft_pwm.c ****             spwm_port_buff[SPWM_PORTF_BUFF_IDX] = PORTF;
- 131:src/soft_pwm.c ****     #endif
- 132:src/soft_pwm.c **** #endif
- 133:src/soft_pwm.c **** #ifdef PORTG
- 134:src/soft_pwm.c ****     #if SPWM_PORTG_USED
- 135:src/soft_pwm.c ****             spwm_port_buff[SPWM_PORTG_BUFF_IDX] = PORTG;
- 136:src/soft_pwm.c ****     #endif
- 137:src/soft_pwm.c **** #endif
- 138:src/soft_pwm.c **** #ifdef PORTH
- 139:src/soft_pwm.c ****     #if SPWM_PORTH_USED
- 140:src/soft_pwm.c ****             spwm_port_buff[SPWM_PORTH_BUFF_IDX] = PORTH;
+ 129:src/soft_pwm.c ****     }
+ 130:src/soft_pwm.c **** }
+ 131:src/soft_pwm.c **** 
+ 132:src/soft_pwm.c **** /**
+ 133:src/soft_pwm.c ****  * @brief 
+ 134:src/soft_pwm.c ****  * 
+ 135:src/soft_pwm.c ****  */
+ 136:src/soft_pwm.c **** static void spwm_buffering_ports()
+ 137:src/soft_pwm.c **** {
+ 138:src/soft_pwm.c **** #ifdef PORTA
+ 139:src/soft_pwm.c ****     #if SPWM_PORTA_USED
+ 140:src/soft_pwm.c ****             spwm_port_buff[SPWM_PORTA_BUFF_IDX] = PORTA;
  141:src/soft_pwm.c ****     #endif
  142:src/soft_pwm.c **** #endif
- 143:src/soft_pwm.c **** }
- 144:src/soft_pwm.c **** #endif
- 145:src/soft_pwm.c **** 
- 146:src/soft_pwm.c **** #if SPWM_USE_PORT_BUFFERING
- 147:src/soft_pwm.c **** static void spwm_write_ports()
- 148:src/soft_pwm.c **** {
- 149:src/soft_pwm.c **** #ifdef PORTA
- 150:src/soft_pwm.c ****     #if SPWM_PORTA_USED
- 151:src/soft_pwm.c ****             PORTA = spwm_port_buff[SPWM_PORTA_BUFF_IDX];
- 152:src/soft_pwm.c ****     #endif
- 153:src/soft_pwm.c **** #endif
- 154:src/soft_pwm.c **** #ifdef PORTB
- 155:src/soft_pwm.c ****     #if SPWM_PORTB_USED
- 156:src/soft_pwm.c ****             PORTB = spwm_port_buff[SPWM_PORTB_BUFF_IDX];
- 157:src/soft_pwm.c ****     #endif
- 158:src/soft_pwm.c **** #endif
- 159:src/soft_pwm.c **** #ifdef PORTC
- 160:src/soft_pwm.c ****     #if SPWM_PORTC_USED
- 161:src/soft_pwm.c ****             PORTC = spwm_port_buff[SPWM_PORTC_BUFF_IDX];
- 162:src/soft_pwm.c ****     #endif
- 163:src/soft_pwm.c **** #endif
- 164:src/soft_pwm.c **** #ifdef PORTD
- 165:src/soft_pwm.c ****     #if SPWM_PORTD_USED
- 166:src/soft_pwm.c ****             PORTD = spwm_port_buff[SPWM_PORTD_BUFF_IDX];
- 167:src/soft_pwm.c ****     #endif
- 168:src/soft_pwm.c **** #endif
- 169:src/soft_pwm.c **** #ifdef PORTE
- 170:src/soft_pwm.c ****     #if SPWM_PORTE_USED
- 171:src/soft_pwm.c ****             PORTE = spwm_port_buff[SPWM_PORTE_BUFF_IDX];
- 172:src/soft_pwm.c ****     #endif
- 173:src/soft_pwm.c **** #endif
- 174:src/soft_pwm.c **** #ifdef PORTF
- 175:src/soft_pwm.c ****     #if SPWM_PORTF_USED
- 176:src/soft_pwm.c ****             PORTG = spwm_port_buff[SPWM_PORTF_BUFF_IDX];
- 177:src/soft_pwm.c ****     #endif
- 178:src/soft_pwm.c **** #endif
- 179:src/soft_pwm.c **** #ifdef PORTG
- 180:src/soft_pwm.c ****     #if SPWM_PORTG_USED
- 181:src/soft_pwm.c ****             PORTG = spwm_port_buff[SPWM_PORTG_BUFF_IDX];
- 182:src/soft_pwm.c ****     #endif
- 183:src/soft_pwm.c **** #endif
- 184:src/soft_pwm.c **** #ifdef PORTH
- 185:src/soft_pwm.c ****     #if SPWM_PORTH_USED
-GAS LISTING /tmp/ccbqDSDv.s 			page 8
+ 143:src/soft_pwm.c **** #ifdef PORTB
+ 144:src/soft_pwm.c ****     #if SPWM_PORTB_USED
+ 145:src/soft_pwm.c ****             spwm_port_buff[SPWM_PORTB_BUFF_IDX] = PORTB;
+ 146:src/soft_pwm.c ****     #endif
+ 147:src/soft_pwm.c **** #endif
+ 148:src/soft_pwm.c **** #ifdef PORTC
+ 149:src/soft_pwm.c ****     #if SPWM_PORTC_USED
+ 150:src/soft_pwm.c ****             spwm_port_buff[SPWM_PORTC_BUFF_IDX] = PORTC;
+ 151:src/soft_pwm.c ****     #endif
+ 152:src/soft_pwm.c **** #endif
+ 153:src/soft_pwm.c **** #ifdef PORTD
+ 154:src/soft_pwm.c ****     #if SPWM_PORTD_USED
+ 155:src/soft_pwm.c ****             spwm_port_buff[SPWM_PORTD_BUFF_IDX] = PORTD;
+ 156:src/soft_pwm.c ****     #endif
+ 157:src/soft_pwm.c **** #endif
+ 158:src/soft_pwm.c **** #ifdef PORTE
+ 159:src/soft_pwm.c ****     #if SPWM_PORTE_USED
+ 160:src/soft_pwm.c ****             spwm_port_buff[SPWM_PORTE_BUFF_IDX] = PORTE;
+ 161:src/soft_pwm.c ****     #endif
+ 162:src/soft_pwm.c **** #endif
+ 163:src/soft_pwm.c **** #ifdef PORTF
+ 164:src/soft_pwm.c ****     #if SPWM_PORTF_USED
+ 165:src/soft_pwm.c ****             spwm_port_buff[SPWM_PORTF_BUFF_IDX] = PORTF;
+ 166:src/soft_pwm.c ****     #endif
+ 167:src/soft_pwm.c **** #endif
+ 168:src/soft_pwm.c **** #ifdef PORTG
+ 169:src/soft_pwm.c ****     #if SPWM_PORTG_USED
+ 170:src/soft_pwm.c ****             spwm_port_buff[SPWM_PORTG_BUFF_IDX] = PORTG;
+ 171:src/soft_pwm.c ****     #endif
+ 172:src/soft_pwm.c **** #endif
+ 173:src/soft_pwm.c **** #ifdef PORTH
+ 174:src/soft_pwm.c ****     #if SPWM_PORTH_USED
+ 175:src/soft_pwm.c ****             spwm_port_buff[SPWM_PORTH_BUFF_IDX] = PORTH;
+ 176:src/soft_pwm.c ****     #endif
+ 177:src/soft_pwm.c **** #endif
+ 178:src/soft_pwm.c **** }
+ 179:src/soft_pwm.c **** 
+ 180:src/soft_pwm.c **** /**
+ 181:src/soft_pwm.c ****  * @brief 
+ 182:src/soft_pwm.c ****  * 
+ 183:src/soft_pwm.c ****  */
+ 184:src/soft_pwm.c **** static void spwm_write_ports()
+ 185:src/soft_pwm.c **** {
+GAS LISTING /tmp/ccyuH0Xn.s 			page 8
 
 
- 186:src/soft_pwm.c ****             PORTH = spwm_port_buff[SPWM_PORTH_BUFF_IDX];
- 187:src/soft_pwm.c ****     #endif
- 188:src/soft_pwm.c **** #endif
- 189:src/soft_pwm.c **** }
+ 186:src/soft_pwm.c **** #ifdef PORTA
+ 187:src/soft_pwm.c ****     #if SPWM_PORTA_USED
+ 188:src/soft_pwm.c ****             PORTA = spwm_port_buff[SPWM_PORTA_BUFF_IDX];
+ 189:src/soft_pwm.c ****     #endif
  190:src/soft_pwm.c **** #endif
- 191:src/soft_pwm.c **** 
- 192:src/soft_pwm.c **** 
- 193:src/soft_pwm.c **** 
- 194:src/soft_pwm.c **** #if SPWM_USE_PORT_BUFFERING
- 195:src/soft_pwm.c ****     #if SPWM_MODE == SPWM_MODE_NON_INVERTING
- 196:src/soft_pwm.c ****         #define __set_outp(port_buff, port, ch_outp, ch_id)        port_buff = spwm_get_port_buff(&
- 197:src/soft_pwm.c ****                                                                     *port_buff = ((spwm_en_state & 
- 198:src/soft_pwm.c ****                                                                     (*port_buff | (1 << ch_outp)) :
- 199:src/soft_pwm.c ****     #else
- 200:src/soft_pwm.c ****         #define __set_outp(port_buff, port, ch_outp, ch_id)        port_buff = spwm_get_port_buff(&
- 201:src/soft_pwm.c ****                                                                     *port_buff = ((spwm_en_state & 
- 202:src/soft_pwm.c ****                                                                     (*port_buff | (1 << ch_outp)) :
- 203:src/soft_pwm.c ****     #endif
- 204:src/soft_pwm.c **** #else
- 205:src/soft_pwm.c ****     #if SPWM_MODE == SPWM_MODE_NON_INVERTING
- 206:src/soft_pwm.c ****         #define __set_outp(port, ch_outp, ch_id)                   port = ((spwm_en_state & (1 << c
- 207:src/soft_pwm.c ****                                                                     (port | (1 << ch_outp)) : (port
- 208:src/soft_pwm.c ****     #else
- 209:src/soft_pwm.c ****         #define __set_outp(port, ch_outp, ch_id)                   port = ((spwm_en_state & (1 << c
- 210:src/soft_pwm.c ****                                                                     (port | (1 << ch_outp)) : (port
- 211:src/soft_pwm.c ****     #endif
- 212:src/soft_pwm.c **** #endif
- 213:src/soft_pwm.c **** 
- 214:src/soft_pwm.c **** 
- 215:src/soft_pwm.c **** #if SPWM_USE_PORT_BUFFERING
- 216:src/soft_pwm.c **** void spwm_tick()
- 217:src/soft_pwm.c **** {
- 218:src/soft_pwm.c **** 
- 219:src/soft_pwm.c ****     uint8_t *port_buff;
- 220:src/soft_pwm.c ****     spwm_buffering_ports();
- 221:src/soft_pwm.c ****     
- 222:src/soft_pwm.c ****     __set_outp(port_buff, SPWM_CH0_PORT, SPWM_CH0, SPWM_CH0_ID);    // CH0
- 223:src/soft_pwm.c ****     __set_outp(port_buff, SPWM_CH1_PORT, SPWM_CH1, SPWM_CH1_ID);    // CH1
- 224:src/soft_pwm.c ****     __set_outp(port_buff, SPWM_CH2_PORT, SPWM_CH2, SPWM_CH2_ID);    // CH2
- 225:src/soft_pwm.c ****     __set_outp(port_buff, SPWM_CH3_PORT, SPWM_CH3, SPWM_CH3_ID);    // CH3
- 226:src/soft_pwm.c ****     __set_outp(port_buff, SPWM_CH4_PORT, SPWM_CH4, SPWM_CH4_ID);    // CH4
- 227:src/soft_pwm.c ****     __set_outp(port_buff, SPWM_CH5_PORT, SPWM_CH5, SPWM_CH5_ID);    // CH5
- 228:src/soft_pwm.c ****     __set_outp(port_buff, SPWM_CH6_PORT, SPWM_CH6, SPWM_CH6_ID);    // CH6
- 229:src/soft_pwm.c ****     __set_outp(port_buff, SPWM_CH7_PORT, SPWM_CH7, SPWM_CH7_ID);    // CH7
- 230:src/soft_pwm.c ****     __set_outp(port_buff, SPWM_CH8_PORT, SPWM_CH8, SPWM_CH8_ID);    // CH8
- 231:src/soft_pwm.c ****     __set_outp(port_buff, SPWM_CH9_PORT, SPWM_CH9, SPWM_CH9_ID);    // CH9
- 232:src/soft_pwm.c ****     __set_outp(port_buff, SPWM_CH10_PORT, SPWM_CH10, SPWM_CH10_ID); // CH10
- 233:src/soft_pwm.c ****     __set_outp(port_buff, SPWM_CH11_PORT, SPWM_CH11, SPWM_CH11_ID); // CH11
- 234:src/soft_pwm.c ****     __set_outp(port_buff, SPWM_CH12_PORT, SPWM_CH12, SPWM_CH12_ID); // CH12
- 235:src/soft_pwm.c ****     __set_outp(port_buff, SPWM_CH13_PORT, SPWM_CH13, SPWM_CH13_ID); // CH13
- 236:src/soft_pwm.c ****     __set_outp(port_buff, SPWM_CH14_PORT, SPWM_CH14, SPWM_CH14_ID); // CH14
- 237:src/soft_pwm.c ****     __set_outp(port_buff, SPWM_CH15_PORT, SPWM_CH15, SPWM_CH15_ID); // CH15
- 238:src/soft_pwm.c ****    
- 239:src/soft_pwm.c ****     spwm_write_ports();
- 240:src/soft_pwm.c **** 
- 241:src/soft_pwm.c ****     spwm_tick_cnt = (spwm_tick_cnt < SPWM_TOP_VAL) ? (spwm_tick_cnt + 1) : 0;
- 242:src/soft_pwm.c **** }
-GAS LISTING /tmp/ccbqDSDv.s 			page 9
+ 191:src/soft_pwm.c **** #ifdef PORTB
+ 192:src/soft_pwm.c ****     #if SPWM_PORTB_USED
+ 193:src/soft_pwm.c ****             PORTB = spwm_port_buff[SPWM_PORTB_BUFF_IDX];
+ 194:src/soft_pwm.c ****     #endif
+ 195:src/soft_pwm.c **** #endif
+ 196:src/soft_pwm.c **** #ifdef PORTC
+ 197:src/soft_pwm.c ****     #if SPWM_PORTC_USED
+ 198:src/soft_pwm.c ****             PORTC = spwm_port_buff[SPWM_PORTC_BUFF_IDX];
+ 199:src/soft_pwm.c ****     #endif
+ 200:src/soft_pwm.c **** #endif
+ 201:src/soft_pwm.c **** #ifdef PORTD
+ 202:src/soft_pwm.c ****     #if SPWM_PORTD_USED
+ 203:src/soft_pwm.c ****             PORTD = spwm_port_buff[SPWM_PORTD_BUFF_IDX];
+ 204:src/soft_pwm.c ****     #endif
+ 205:src/soft_pwm.c **** #endif
+ 206:src/soft_pwm.c **** #ifdef PORTE
+ 207:src/soft_pwm.c ****     #if SPWM_PORTE_USED
+ 208:src/soft_pwm.c ****             PORTE = spwm_port_buff[SPWM_PORTE_BUFF_IDX];
+ 209:src/soft_pwm.c ****     #endif
+ 210:src/soft_pwm.c **** #endif
+ 211:src/soft_pwm.c **** #ifdef PORTF
+ 212:src/soft_pwm.c ****     #if SPWM_PORTF_USED
+ 213:src/soft_pwm.c ****             PORTG = spwm_port_buff[SPWM_PORTF_BUFF_IDX];
+ 214:src/soft_pwm.c ****     #endif
+ 215:src/soft_pwm.c **** #endif
+ 216:src/soft_pwm.c **** #ifdef PORTG
+ 217:src/soft_pwm.c ****     #if SPWM_PORTG_USED
+ 218:src/soft_pwm.c ****             PORTG = spwm_port_buff[SPWM_PORTG_BUFF_IDX];
+ 219:src/soft_pwm.c ****     #endif
+ 220:src/soft_pwm.c **** #endif
+ 221:src/soft_pwm.c **** #ifdef PORTH
+ 222:src/soft_pwm.c ****     #if SPWM_PORTH_USED
+ 223:src/soft_pwm.c ****             PORTH = spwm_port_buff[SPWM_PORTH_BUFF_IDX];
+ 224:src/soft_pwm.c ****     #endif
+ 225:src/soft_pwm.c **** #endif
+ 226:src/soft_pwm.c **** }
+ 227:src/soft_pwm.c **** void spwm_tick()
+ 228:src/soft_pwm.c **** {
+ 229:src/soft_pwm.c **** 
+ 230:src/soft_pwm.c ****     uint8_t *port_buff;
+ 231:src/soft_pwm.c ****     spwm_buffering_ports();
+ 232:src/soft_pwm.c ****     
+ 233:src/soft_pwm.c ****     __set_outp(port_buff, SPWM_CH0_PORT, SPWM_CH0, SPWM_CH0_ID);    // CH0
+ 234:src/soft_pwm.c ****     __set_outp(port_buff, SPWM_CH1_PORT, SPWM_CH1, SPWM_CH1_ID);    // CH1
+ 235:src/soft_pwm.c ****     __set_outp(port_buff, SPWM_CH2_PORT, SPWM_CH2, SPWM_CH2_ID);    // CH2
+ 236:src/soft_pwm.c ****     __set_outp(port_buff, SPWM_CH3_PORT, SPWM_CH3, SPWM_CH3_ID);    // CH3
+ 237:src/soft_pwm.c ****     __set_outp(port_buff, SPWM_CH4_PORT, SPWM_CH4, SPWM_CH4_ID);    // CH4
+ 238:src/soft_pwm.c ****     __set_outp(port_buff, SPWM_CH5_PORT, SPWM_CH5, SPWM_CH5_ID);    // CH5
+ 239:src/soft_pwm.c ****     __set_outp(port_buff, SPWM_CH6_PORT, SPWM_CH6, SPWM_CH6_ID);    // CH6
+ 240:src/soft_pwm.c ****     __set_outp(port_buff, SPWM_CH7_PORT, SPWM_CH7, SPWM_CH7_ID);    // CH7
+ 241:src/soft_pwm.c ****     __set_outp(port_buff, SPWM_CH8_PORT, SPWM_CH8, SPWM_CH8_ID);    // CH8
+ 242:src/soft_pwm.c ****     __set_outp(port_buff, SPWM_CH9_PORT, SPWM_CH9, SPWM_CH9_ID);    // CH9
+GAS LISTING /tmp/ccyuH0Xn.s 			page 9
 
 
- 243:src/soft_pwm.c **** #else
- 244:src/soft_pwm.c **** void spwm_tick()
- 245:src/soft_pwm.c **** {
- 218               		.loc 1 245 0 is_stmt 1
+ 243:src/soft_pwm.c ****     __set_outp(port_buff, SPWM_CH10_PORT, SPWM_CH10, SPWM_CH10_ID); // CH10
+ 244:src/soft_pwm.c ****     __set_outp(port_buff, SPWM_CH11_PORT, SPWM_CH11, SPWM_CH11_ID); // CH11
+ 245:src/soft_pwm.c ****     __set_outp(port_buff, SPWM_CH12_PORT, SPWM_CH12, SPWM_CH12_ID); // CH12
+ 246:src/soft_pwm.c ****     __set_outp(port_buff, SPWM_CH13_PORT, SPWM_CH13, SPWM_CH13_ID); // CH13
+ 247:src/soft_pwm.c ****     __set_outp(port_buff, SPWM_CH14_PORT, SPWM_CH14, SPWM_CH14_ID); // CH14
+ 248:src/soft_pwm.c ****     __set_outp(port_buff, SPWM_CH15_PORT, SPWM_CH15, SPWM_CH15_ID); // CH15
+ 249:src/soft_pwm.c ****    
+ 250:src/soft_pwm.c ****     spwm_write_ports();
+ 251:src/soft_pwm.c **** 
+ 252:src/soft_pwm.c ****     spwm_tick_cnt = (spwm_tick_cnt < SPWM_TOP_VAL) ? (spwm_tick_cnt + 1) : 0;
+ 253:src/soft_pwm.c **** }
+ 254:src/soft_pwm.c **** #else
+ 255:src/soft_pwm.c **** /**
+ 256:src/soft_pwm.c ****  * @brief 
+ 257:src/soft_pwm.c ****  * 
+ 258:src/soft_pwm.c ****  */
+ 259:src/soft_pwm.c **** void spwm_tick()
+ 260:src/soft_pwm.c **** {
+ 218               		.loc 1 260 0 is_stmt 1
  219               		.cfi_startproc
  220               	/* prologue: function */
  221               	/* frame size = 0 */
  222               	/* stack size = 0 */
  223               	.L__stack_usage = 0
- 246:src/soft_pwm.c ****     __set_outp(SPWM_CH0_PORT, SPWM_CH0, SPWM_CH0_ID);    // CH0
- 224               		.loc 1 246 0
+ 261:src/soft_pwm.c ****     __set_outp(SPWM_CH0_PORT, SPWM_CH0, SPWM_CH0_ID);    // CH0
+ 224               		.loc 1 261 0
  225 0000 8091 0000 		lds r24,spwm_en_state
  226 0004 9091 0000 		lds r25,spwm_en_state+1
  227 0008 80FF      		sbrs r24,0
  228 000a 00C0      		rjmp .L21
- 229               		.loc 1 246 0 is_stmt 0 discriminator 1
+ 229               		.loc 1 261 0 is_stmt 0 discriminator 1
  230 000c 8091 0000 		lds r24,spwm_duty_cycle_buff
  231 0010 90E0      		ldi r25,0
  232 0012 2091 0000 		lds r18,spwm_tick_cnt
@@ -504,52 +519,52 @@ GAS LISTING /tmp/ccbqDSDv.s 			page 1
  234 001a 2817      		cp r18,r24
  235 001c 3907      		cpc r19,r25
  236 001e 00F4      		brsh .L21
- 237               		.loc 1 246 0 discriminator 3
- 238 0020 85B1      		in r24,0x5
+ 237               		.loc 1 261 0 discriminator 3
+ 238 0020 8BB1      		in r24,0xb
  239 0022 8160      		ori r24,lo8(1)
  240 0024 00C0      		rjmp .L22
  241               	.L21:
- 242               		.loc 1 246 0 discriminator 4
- 243 0026 85B1      		in r24,0x5
+ 242               		.loc 1 261 0 discriminator 4
+ 243 0026 8BB1      		in r24,0xb
  244 0028 8E7F      		andi r24,lo8(-2)
  245               	.L22:
- 246               		.loc 1 246 0 discriminator 6
- 247 002a 85B9      		out 0x5,r24
- 247:src/soft_pwm.c ****     __set_outp(SPWM_CH1_PORT, SPWM_CH1, SPWM_CH1_ID);    // CH1
- 248               		.loc 1 247 0 is_stmt 1 discriminator 6
+ 246               		.loc 1 261 0 discriminator 6
+ 247 002a 8BB9      		out 0xb,r24
+ 262:src/soft_pwm.c ****     __set_outp(SPWM_CH1_PORT, SPWM_CH1, SPWM_CH1_ID);    // CH1
+ 248               		.loc 1 262 0 is_stmt 1 discriminator 6
  249 002c 8091 0000 		lds r24,spwm_en_state
  250 0030 9091 0000 		lds r25,spwm_en_state+1
  251 0034 81FF      		sbrs r24,1
  252 0036 00C0      		rjmp .L23
- 253               		.loc 1 247 0 is_stmt 0 discriminator 1
+ 253               		.loc 1 262 0 is_stmt 0 discriminator 1
  254 0038 8091 0000 		lds r24,spwm_duty_cycle_buff+1
+GAS LISTING /tmp/ccyuH0Xn.s 			page 10
+
+
  255 003c 90E0      		ldi r25,0
  256 003e 2091 0000 		lds r18,spwm_tick_cnt
  257 0042 3091 0000 		lds r19,spwm_tick_cnt+1
  258 0046 2817      		cp r18,r24
  259 0048 3907      		cpc r19,r25
  260 004a 00F4      		brsh .L23
- 261               		.loc 1 247 0 discriminator 3
- 262 004c 85B1      		in r24,0x5
+ 261               		.loc 1 262 0 discriminator 3
+ 262 004c 8BB1      		in r24,0xb
  263 004e 8260      		ori r24,lo8(2)
  264 0050 00C0      		rjmp .L24
  265               	.L23:
- 266               		.loc 1 247 0 discriminator 4
- 267 0052 85B1      		in r24,0x5
+ 266               		.loc 1 262 0 discriminator 4
+ 267 0052 8BB1      		in r24,0xb
  268 0054 8D7F      		andi r24,lo8(-3)
  269               	.L24:
-GAS LISTING /tmp/ccbqDSDv.s 			page 10
-
-
- 270               		.loc 1 247 0 discriminator 6
- 271 0056 85B9      		out 0x5,r24
- 248:src/soft_pwm.c ****     __set_outp(SPWM_CH2_PORT, SPWM_CH2, SPWM_CH2_ID);    // CH2
- 272               		.loc 1 248 0 is_stmt 1 discriminator 6
+ 270               		.loc 1 262 0 discriminator 6
+ 271 0056 8BB9      		out 0xb,r24
+ 263:src/soft_pwm.c ****     __set_outp(SPWM_CH2_PORT, SPWM_CH2, SPWM_CH2_ID);    // CH2
+ 272               		.loc 1 263 0 is_stmt 1 discriminator 6
  273 0058 8091 0000 		lds r24,spwm_en_state
  274 005c 9091 0000 		lds r25,spwm_en_state+1
  275 0060 82FF      		sbrs r24,2
  276 0062 00C0      		rjmp .L25
- 277               		.loc 1 248 0 is_stmt 0 discriminator 1
+ 277               		.loc 1 263 0 is_stmt 0 discriminator 1
  278 0064 8091 0000 		lds r24,spwm_duty_cycle_buff+2
  279 0068 90E0      		ldi r25,0
  280 006a 2091 0000 		lds r18,spwm_tick_cnt
@@ -557,24 +572,24 @@ GAS LISTING /tmp/ccbqDSDv.s 			page 1
  282 0072 2817      		cp r18,r24
  283 0074 3907      		cpc r19,r25
  284 0076 00F4      		brsh .L25
- 285               		.loc 1 248 0 discriminator 3
- 286 0078 85B1      		in r24,0x5
+ 285               		.loc 1 263 0 discriminator 3
+ 286 0078 8BB1      		in r24,0xb
  287 007a 8460      		ori r24,lo8(4)
  288 007c 00C0      		rjmp .L26
  289               	.L25:
- 290               		.loc 1 248 0 discriminator 4
- 291 007e 85B1      		in r24,0x5
+ 290               		.loc 1 263 0 discriminator 4
+ 291 007e 8BB1      		in r24,0xb
  292 0080 8B7F      		andi r24,lo8(-5)
  293               	.L26:
- 294               		.loc 1 248 0 discriminator 6
- 295 0082 85B9      		out 0x5,r24
- 249:src/soft_pwm.c ****     __set_outp(SPWM_CH3_PORT, SPWM_CH3, SPWM_CH3_ID);    // CH3
- 296               		.loc 1 249 0 is_stmt 1 discriminator 6
+ 294               		.loc 1 263 0 discriminator 6
+ 295 0082 8BB9      		out 0xb,r24
+ 264:src/soft_pwm.c ****     __set_outp(SPWM_CH3_PORT, SPWM_CH3, SPWM_CH3_ID);    // CH3
+ 296               		.loc 1 264 0 is_stmt 1 discriminator 6
  297 0084 8091 0000 		lds r24,spwm_en_state
  298 0088 9091 0000 		lds r25,spwm_en_state+1
  299 008c 83FF      		sbrs r24,3
  300 008e 00C0      		rjmp .L27
- 301               		.loc 1 249 0 is_stmt 0 discriminator 1
+ 301               		.loc 1 264 0 is_stmt 0 discriminator 1
  302 0090 8091 0000 		lds r24,spwm_duty_cycle_buff+3
  303 0094 90E0      		ldi r25,0
  304 0096 2091 0000 		lds r18,spwm_tick_cnt
@@ -582,27 +597,27 @@ GAS LISTING /tmp/ccbqDSDv.s 			page 1
  306 009e 2817      		cp r18,r24
  307 00a0 3907      		cpc r19,r25
  308 00a2 00F4      		brsh .L27
- 309               		.loc 1 249 0 discriminator 3
- 310 00a4 85B1      		in r24,0x5
+ 309               		.loc 1 264 0 discriminator 3
+GAS LISTING /tmp/ccyuH0Xn.s 			page 11
+
+
+ 310 00a4 8BB1      		in r24,0xb
  311 00a6 8860      		ori r24,lo8(8)
  312 00a8 00C0      		rjmp .L28
  313               	.L27:
- 314               		.loc 1 249 0 discriminator 4
- 315 00aa 85B1      		in r24,0x5
+ 314               		.loc 1 264 0 discriminator 4
+ 315 00aa 8BB1      		in r24,0xb
  316 00ac 877F      		andi r24,lo8(-9)
  317               	.L28:
- 318               		.loc 1 249 0 discriminator 6
- 319 00ae 85B9      		out 0x5,r24
- 250:src/soft_pwm.c ****     __set_outp(SPWM_CH4_PORT, SPWM_CH4, SPWM_CH4_ID);    // CH4
- 320               		.loc 1 250 0 is_stmt 1 discriminator 6
+ 318               		.loc 1 264 0 discriminator 6
+ 319 00ae 8BB9      		out 0xb,r24
+ 265:src/soft_pwm.c ****     __set_outp(SPWM_CH4_PORT, SPWM_CH4, SPWM_CH4_ID);    // CH4
+ 320               		.loc 1 265 0 is_stmt 1 discriminator 6
  321 00b0 8091 0000 		lds r24,spwm_en_state
  322 00b4 9091 0000 		lds r25,spwm_en_state+1
  323 00b8 84FF      		sbrs r24,4
-GAS LISTING /tmp/ccbqDSDv.s 			page 11
-
-
  324 00ba 00C0      		rjmp .L29
- 325               		.loc 1 250 0 is_stmt 0 discriminator 1
+ 325               		.loc 1 265 0 is_stmt 0 discriminator 1
  326 00bc 8091 0000 		lds r24,spwm_duty_cycle_buff+4
  327 00c0 90E0      		ldi r25,0
  328 00c2 2091 0000 		lds r18,spwm_tick_cnt
@@ -610,24 +625,24 @@ GAS LISTING /tmp/ccbqDSDv.s 			page 1
  330 00ca 2817      		cp r18,r24
  331 00cc 3907      		cpc r19,r25
  332 00ce 00F4      		brsh .L29
- 333               		.loc 1 250 0 discriminator 3
- 334 00d0 85B1      		in r24,0x5
+ 333               		.loc 1 265 0 discriminator 3
+ 334 00d0 8BB1      		in r24,0xb
  335 00d2 8061      		ori r24,lo8(16)
  336 00d4 00C0      		rjmp .L30
  337               	.L29:
- 338               		.loc 1 250 0 discriminator 4
- 339 00d6 85B1      		in r24,0x5
+ 338               		.loc 1 265 0 discriminator 4
+ 339 00d6 8BB1      		in r24,0xb
  340 00d8 8F7E      		andi r24,lo8(-17)
  341               	.L30:
- 342               		.loc 1 250 0 discriminator 6
- 343 00da 85B9      		out 0x5,r24
- 251:src/soft_pwm.c ****     __set_outp(SPWM_CH5_PORT, SPWM_CH5, SPWM_CH5_ID);    // CH5
- 344               		.loc 1 251 0 is_stmt 1 discriminator 6
+ 342               		.loc 1 265 0 discriminator 6
+ 343 00da 8BB9      		out 0xb,r24
+ 266:src/soft_pwm.c ****     __set_outp(SPWM_CH5_PORT, SPWM_CH5, SPWM_CH5_ID);    // CH5
+ 344               		.loc 1 266 0 is_stmt 1 discriminator 6
  345 00dc 8091 0000 		lds r24,spwm_en_state
  346 00e0 9091 0000 		lds r25,spwm_en_state+1
  347 00e4 85FF      		sbrs r24,5
  348 00e6 00C0      		rjmp .L31
- 349               		.loc 1 251 0 is_stmt 0 discriminator 1
+ 349               		.loc 1 266 0 is_stmt 0 discriminator 1
  350 00e8 8091 0000 		lds r24,spwm_duty_cycle_buff+5
  351 00ec 90E0      		ldi r25,0
  352 00ee 2091 0000 		lds r18,spwm_tick_cnt
@@ -635,52 +650,52 @@ GAS LISTING /tmp/ccbqDSDv.s 			page 1
  354 00f6 2817      		cp r18,r24
  355 00f8 3907      		cpc r19,r25
  356 00fa 00F4      		brsh .L31
- 357               		.loc 1 251 0 discriminator 3
- 358 00fc 85B1      		in r24,0x5
+ 357               		.loc 1 266 0 discriminator 3
+ 358 00fc 8BB1      		in r24,0xb
  359 00fe 8062      		ori r24,lo8(32)
  360 0100 00C0      		rjmp .L32
  361               	.L31:
- 362               		.loc 1 251 0 discriminator 4
- 363 0102 85B1      		in r24,0x5
+ 362               		.loc 1 266 0 discriminator 4
+ 363 0102 8BB1      		in r24,0xb
  364 0104 8F7D      		andi r24,lo8(-33)
+GAS LISTING /tmp/ccyuH0Xn.s 			page 12
+
+
  365               	.L32:
- 366               		.loc 1 251 0 discriminator 6
- 367 0106 85B9      		out 0x5,r24
- 252:src/soft_pwm.c ****     __set_outp(SPWM_CH6_PORT, SPWM_CH6, SPWM_CH6_ID);    // CH6
- 368               		.loc 1 252 0 is_stmt 1 discriminator 6
+ 366               		.loc 1 266 0 discriminator 6
+ 367 0106 8BB9      		out 0xb,r24
+ 267:src/soft_pwm.c ****     __set_outp(SPWM_CH6_PORT, SPWM_CH6, SPWM_CH6_ID);    // CH6
+ 368               		.loc 1 267 0 is_stmt 1 discriminator 6
  369 0108 8091 0000 		lds r24,spwm_en_state
  370 010c 9091 0000 		lds r25,spwm_en_state+1
  371 0110 86FF      		sbrs r24,6
  372 0112 00C0      		rjmp .L33
- 373               		.loc 1 252 0 is_stmt 0 discriminator 1
+ 373               		.loc 1 267 0 is_stmt 0 discriminator 1
  374 0114 8091 0000 		lds r24,spwm_duty_cycle_buff+6
  375 0118 90E0      		ldi r25,0
  376 011a 2091 0000 		lds r18,spwm_tick_cnt
  377 011e 3091 0000 		lds r19,spwm_tick_cnt+1
  378 0122 2817      		cp r18,r24
-GAS LISTING /tmp/ccbqDSDv.s 			page 12
-
-
  379 0124 3907      		cpc r19,r25
  380 0126 00F4      		brsh .L33
- 381               		.loc 1 252 0 discriminator 3
- 382 0128 85B1      		in r24,0x5
+ 381               		.loc 1 267 0 discriminator 3
+ 382 0128 8BB1      		in r24,0xb
  383 012a 8064      		ori r24,lo8(64)
  384 012c 00C0      		rjmp .L34
  385               	.L33:
- 386               		.loc 1 252 0 discriminator 4
- 387 012e 85B1      		in r24,0x5
+ 386               		.loc 1 267 0 discriminator 4
+ 387 012e 8BB1      		in r24,0xb
  388 0130 8F7B      		andi r24,lo8(-65)
  389               	.L34:
- 390               		.loc 1 252 0 discriminator 6
- 391 0132 85B9      		out 0x5,r24
- 253:src/soft_pwm.c ****     __set_outp(SPWM_CH7_PORT, SPWM_CH7, SPWM_CH7_ID);    // CH7
- 392               		.loc 1 253 0 is_stmt 1 discriminator 6
+ 390               		.loc 1 267 0 discriminator 6
+ 391 0132 8BB9      		out 0xb,r24
+ 268:src/soft_pwm.c ****     __set_outp(SPWM_CH7_PORT, SPWM_CH7, SPWM_CH7_ID);    // CH7
+ 392               		.loc 1 268 0 is_stmt 1 discriminator 6
  393 0134 8091 0000 		lds r24,spwm_en_state
  394 0138 9091 0000 		lds r25,spwm_en_state+1
  395 013c 87FF      		sbrs r24,7
  396 013e 00C0      		rjmp .L35
- 397               		.loc 1 253 0 is_stmt 0 discriminator 1
+ 397               		.loc 1 268 0 is_stmt 0 discriminator 1
  398 0140 8091 0000 		lds r24,spwm_duty_cycle_buff+7
  399 0144 90E0      		ldi r25,0
  400 0146 2091 0000 		lds r18,spwm_tick_cnt
@@ -688,24 +703,27 @@ GAS LISTING /tmp/ccbqDSDv.s 			page 1
  402 014e 2817      		cp r18,r24
  403 0150 3907      		cpc r19,r25
  404 0152 00F4      		brsh .L35
- 405               		.loc 1 253 0 discriminator 3
- 406 0154 85B1      		in r24,0x5
+ 405               		.loc 1 268 0 discriminator 3
+ 406 0154 8BB1      		in r24,0xb
  407 0156 8068      		ori r24,lo8(-128)
  408 0158 00C0      		rjmp .L36
  409               	.L35:
- 410               		.loc 1 253 0 discriminator 4
- 411 015a 85B1      		in r24,0x5
+ 410               		.loc 1 268 0 discriminator 4
+ 411 015a 8BB1      		in r24,0xb
  412 015c 8F77      		andi r24,lo8(127)
  413               	.L36:
- 414               		.loc 1 253 0 discriminator 6
- 415 015e 85B9      		out 0x5,r24
- 254:src/soft_pwm.c ****     __set_outp(SPWM_CH8_PORT, SPWM_CH8, SPWM_CH8_ID);    // CH8
- 416               		.loc 1 254 0 is_stmt 1 discriminator 6
+ 414               		.loc 1 268 0 discriminator 6
+ 415 015e 8BB9      		out 0xb,r24
+ 269:src/soft_pwm.c ****     __set_outp(SPWM_CH8_PORT, SPWM_CH8, SPWM_CH8_ID);    // CH8
+ 416               		.loc 1 269 0 is_stmt 1 discriminator 6
  417 0160 8091 0000 		lds r24,spwm_en_state
  418 0164 9091 0000 		lds r25,spwm_en_state+1
+GAS LISTING /tmp/ccyuH0Xn.s 			page 13
+
+
  419 0168 90FF      		sbrs r25,0
  420 016a 00C0      		rjmp .L37
- 421               		.loc 1 254 0 is_stmt 0 discriminator 1
+ 421               		.loc 1 269 0 is_stmt 0 discriminator 1
  422 016c 8091 0000 		lds r24,spwm_duty_cycle_buff+8
  423 0170 90E0      		ldi r25,0
  424 0172 2091 0000 		lds r18,spwm_tick_cnt
@@ -713,27 +731,24 @@ GAS LISTING /tmp/ccbqDSDv.s 			page 1
  426 017a 2817      		cp r18,r24
  427 017c 3907      		cpc r19,r25
  428 017e 00F4      		brsh .L37
- 429               		.loc 1 254 0 discriminator 3
- 430 0180 8BB1      		in r24,0xb
+ 429               		.loc 1 269 0 discriminator 3
+ 430 0180 85B1      		in r24,0x5
  431 0182 8160      		ori r24,lo8(1)
  432 0184 00C0      		rjmp .L38
  433               	.L37:
-GAS LISTING /tmp/ccbqDSDv.s 			page 13
-
-
- 434               		.loc 1 254 0 discriminator 4
- 435 0186 8BB1      		in r24,0xb
+ 434               		.loc 1 269 0 discriminator 4
+ 435 0186 85B1      		in r24,0x5
  436 0188 8E7F      		andi r24,lo8(-2)
  437               	.L38:
- 438               		.loc 1 254 0 discriminator 6
- 439 018a 8BB9      		out 0xb,r24
- 255:src/soft_pwm.c ****     __set_outp(SPWM_CH9_PORT, SPWM_CH9, SPWM_CH9_ID);    // CH9
- 440               		.loc 1 255 0 is_stmt 1 discriminator 6
+ 438               		.loc 1 269 0 discriminator 6
+ 439 018a 85B9      		out 0x5,r24
+ 270:src/soft_pwm.c ****     __set_outp(SPWM_CH9_PORT, SPWM_CH9, SPWM_CH9_ID);    // CH9
+ 440               		.loc 1 270 0 is_stmt 1 discriminator 6
  441 018c 8091 0000 		lds r24,spwm_en_state
  442 0190 9091 0000 		lds r25,spwm_en_state+1
  443 0194 91FF      		sbrs r25,1
  444 0196 00C0      		rjmp .L39
- 445               		.loc 1 255 0 is_stmt 0 discriminator 1
+ 445               		.loc 1 270 0 is_stmt 0 discriminator 1
  446 0198 8091 0000 		lds r24,spwm_duty_cycle_buff+9
  447 019c 90E0      		ldi r25,0
  448 019e 2091 0000 		lds r18,spwm_tick_cnt
@@ -741,52 +756,52 @@ GAS LISTING /tmp/ccbqDSDv.s 			page 1
  450 01a6 2817      		cp r18,r24
  451 01a8 3907      		cpc r19,r25
  452 01aa 00F4      		brsh .L39
- 453               		.loc 1 255 0 discriminator 3
- 454 01ac 8BB1      		in r24,0xb
+ 453               		.loc 1 270 0 discriminator 3
+ 454 01ac 85B1      		in r24,0x5
  455 01ae 8260      		ori r24,lo8(2)
  456 01b0 00C0      		rjmp .L40
  457               	.L39:
- 458               		.loc 1 255 0 discriminator 4
- 459 01b2 8BB1      		in r24,0xb
+ 458               		.loc 1 270 0 discriminator 4
+ 459 01b2 85B1      		in r24,0x5
  460 01b4 8D7F      		andi r24,lo8(-3)
  461               	.L40:
- 462               		.loc 1 255 0 discriminator 6
- 463 01b6 8BB9      		out 0xb,r24
- 256:src/soft_pwm.c ****     __set_outp(SPWM_CH10_PORT, SPWM_CH10, SPWM_CH10_ID); // CH10
- 464               		.loc 1 256 0 is_stmt 1 discriminator 6
+ 462               		.loc 1 270 0 discriminator 6
+ 463 01b6 85B9      		out 0x5,r24
+ 271:src/soft_pwm.c ****     __set_outp(SPWM_CH10_PORT, SPWM_CH10, SPWM_CH10_ID); // CH10
+ 464               		.loc 1 271 0 is_stmt 1 discriminator 6
  465 01b8 8091 0000 		lds r24,spwm_en_state
  466 01bc 9091 0000 		lds r25,spwm_en_state+1
  467 01c0 92FF      		sbrs r25,2
  468 01c2 00C0      		rjmp .L41
- 469               		.loc 1 256 0 is_stmt 0 discriminator 1
+ 469               		.loc 1 271 0 is_stmt 0 discriminator 1
  470 01c4 8091 0000 		lds r24,spwm_duty_cycle_buff+10
  471 01c8 90E0      		ldi r25,0
  472 01ca 2091 0000 		lds r18,spwm_tick_cnt
  473 01ce 3091 0000 		lds r19,spwm_tick_cnt+1
+GAS LISTING /tmp/ccyuH0Xn.s 			page 14
+
+
  474 01d2 2817      		cp r18,r24
  475 01d4 3907      		cpc r19,r25
  476 01d6 00F4      		brsh .L41
- 477               		.loc 1 256 0 discriminator 3
- 478 01d8 8BB1      		in r24,0xb
+ 477               		.loc 1 271 0 discriminator 3
+ 478 01d8 85B1      		in r24,0x5
  479 01da 8460      		ori r24,lo8(4)
  480 01dc 00C0      		rjmp .L42
  481               	.L41:
- 482               		.loc 1 256 0 discriminator 4
- 483 01de 8BB1      		in r24,0xb
+ 482               		.loc 1 271 0 discriminator 4
+ 483 01de 85B1      		in r24,0x5
  484 01e0 8B7F      		andi r24,lo8(-5)
  485               	.L42:
- 486               		.loc 1 256 0 discriminator 6
- 487 01e2 8BB9      		out 0xb,r24
- 257:src/soft_pwm.c ****     __set_outp(SPWM_CH11_PORT, SPWM_CH11, SPWM_CH11_ID); // CH11
-GAS LISTING /tmp/ccbqDSDv.s 			page 14
-
-
- 488               		.loc 1 257 0 is_stmt 1 discriminator 6
+ 486               		.loc 1 271 0 discriminator 6
+ 487 01e2 85B9      		out 0x5,r24
+ 272:src/soft_pwm.c ****     __set_outp(SPWM_CH11_PORT, SPWM_CH11, SPWM_CH11_ID); // CH11
+ 488               		.loc 1 272 0 is_stmt 1 discriminator 6
  489 01e4 8091 0000 		lds r24,spwm_en_state
  490 01e8 9091 0000 		lds r25,spwm_en_state+1
  491 01ec 93FF      		sbrs r25,3
  492 01ee 00C0      		rjmp .L43
- 493               		.loc 1 257 0 is_stmt 0 discriminator 1
+ 493               		.loc 1 272 0 is_stmt 0 discriminator 1
  494 01f0 8091 0000 		lds r24,spwm_duty_cycle_buff+11
  495 01f4 90E0      		ldi r25,0
  496 01f6 2091 0000 		lds r18,spwm_tick_cnt
@@ -794,24 +809,24 @@ GAS LISTING /tmp/ccbqDSDv.s 			page 1
  498 01fe 2817      		cp r18,r24
  499 0200 3907      		cpc r19,r25
  500 0202 00F4      		brsh .L43
- 501               		.loc 1 257 0 discriminator 3
- 502 0204 8BB1      		in r24,0xb
+ 501               		.loc 1 272 0 discriminator 3
+ 502 0204 85B1      		in r24,0x5
  503 0206 8860      		ori r24,lo8(8)
  504 0208 00C0      		rjmp .L44
  505               	.L43:
- 506               		.loc 1 257 0 discriminator 4
- 507 020a 8BB1      		in r24,0xb
+ 506               		.loc 1 272 0 discriminator 4
+ 507 020a 85B1      		in r24,0x5
  508 020c 877F      		andi r24,lo8(-9)
  509               	.L44:
- 510               		.loc 1 257 0 discriminator 6
- 511 020e 8BB9      		out 0xb,r24
- 258:src/soft_pwm.c ****     __set_outp(SPWM_CH12_PORT, SPWM_CH12, SPWM_CH12_ID); // CH12
- 512               		.loc 1 258 0 is_stmt 1 discriminator 6
+ 510               		.loc 1 272 0 discriminator 6
+ 511 020e 85B9      		out 0x5,r24
+ 273:src/soft_pwm.c ****     __set_outp(SPWM_CH12_PORT, SPWM_CH12, SPWM_CH12_ID); // CH12
+ 512               		.loc 1 273 0 is_stmt 1 discriminator 6
  513 0210 8091 0000 		lds r24,spwm_en_state
  514 0214 9091 0000 		lds r25,spwm_en_state+1
  515 0218 94FF      		sbrs r25,4
  516 021a 00C0      		rjmp .L45
- 517               		.loc 1 258 0 is_stmt 0 discriminator 1
+ 517               		.loc 1 273 0 is_stmt 0 discriminator 1
  518 021c 8091 0000 		lds r24,spwm_duty_cycle_buff+12
  519 0220 90E0      		ldi r25,0
  520 0222 2091 0000 		lds r18,spwm_tick_cnt
@@ -819,52 +834,52 @@ GAS LISTING /tmp/ccbqDSDv.s 			page 1
  522 022a 2817      		cp r18,r24
  523 022c 3907      		cpc r19,r25
  524 022e 00F4      		brsh .L45
- 525               		.loc 1 258 0 discriminator 3
- 526 0230 8BB1      		in r24,0xb
+ 525               		.loc 1 273 0 discriminator 3
+ 526 0230 85B1      		in r24,0x5
  527 0232 8061      		ori r24,lo8(16)
  528 0234 00C0      		rjmp .L46
+GAS LISTING /tmp/ccyuH0Xn.s 			page 15
+
+
  529               	.L45:
- 530               		.loc 1 258 0 discriminator 4
- 531 0236 8BB1      		in r24,0xb
+ 530               		.loc 1 273 0 discriminator 4
+ 531 0236 85B1      		in r24,0x5
  532 0238 8F7E      		andi r24,lo8(-17)
  533               	.L46:
- 534               		.loc 1 258 0 discriminator 6
- 535 023a 8BB9      		out 0xb,r24
- 259:src/soft_pwm.c ****     __set_outp(SPWM_CH13_PORT, SPWM_CH13, SPWM_CH13_ID); // CH13
- 536               		.loc 1 259 0 is_stmt 1 discriminator 6
+ 534               		.loc 1 273 0 discriminator 6
+ 535 023a 85B9      		out 0x5,r24
+ 274:src/soft_pwm.c ****     __set_outp(SPWM_CH13_PORT, SPWM_CH13, SPWM_CH13_ID); // CH13
+ 536               		.loc 1 274 0 is_stmt 1 discriminator 6
  537 023c 8091 0000 		lds r24,spwm_en_state
  538 0240 9091 0000 		lds r25,spwm_en_state+1
  539 0244 95FF      		sbrs r25,5
  540 0246 00C0      		rjmp .L47
- 541               		.loc 1 259 0 is_stmt 0 discriminator 1
+ 541               		.loc 1 274 0 is_stmt 0 discriminator 1
  542 0248 8091 0000 		lds r24,spwm_duty_cycle_buff+13
-GAS LISTING /tmp/ccbqDSDv.s 			page 15
-
-
  543 024c 90E0      		ldi r25,0
  544 024e 2091 0000 		lds r18,spwm_tick_cnt
  545 0252 3091 0000 		lds r19,spwm_tick_cnt+1
  546 0256 2817      		cp r18,r24
  547 0258 3907      		cpc r19,r25
  548 025a 00F4      		brsh .L47
- 549               		.loc 1 259 0 discriminator 3
- 550 025c 8BB1      		in r24,0xb
+ 549               		.loc 1 274 0 discriminator 3
+ 550 025c 85B1      		in r24,0x5
  551 025e 8062      		ori r24,lo8(32)
  552 0260 00C0      		rjmp .L48
  553               	.L47:
- 554               		.loc 1 259 0 discriminator 4
- 555 0262 8BB1      		in r24,0xb
+ 554               		.loc 1 274 0 discriminator 4
+ 555 0262 85B1      		in r24,0x5
  556 0264 8F7D      		andi r24,lo8(-33)
  557               	.L48:
- 558               		.loc 1 259 0 discriminator 6
- 559 0266 8BB9      		out 0xb,r24
- 260:src/soft_pwm.c ****     __set_outp(SPWM_CH14_PORT, SPWM_CH14, SPWM_CH14_ID); // CH14
- 560               		.loc 1 260 0 is_stmt 1 discriminator 6
+ 558               		.loc 1 274 0 discriminator 6
+ 559 0266 85B9      		out 0x5,r24
+ 275:src/soft_pwm.c ****     __set_outp(SPWM_CH14_PORT, SPWM_CH14, SPWM_CH14_ID); // CH14
+ 560               		.loc 1 275 0 is_stmt 1 discriminator 6
  561 0268 8091 0000 		lds r24,spwm_en_state
  562 026c 9091 0000 		lds r25,spwm_en_state+1
  563 0270 96FF      		sbrs r25,6
  564 0272 00C0      		rjmp .L49
- 565               		.loc 1 260 0 is_stmt 0 discriminator 1
+ 565               		.loc 1 275 0 is_stmt 0 discriminator 1
  566 0274 8091 0000 		lds r24,spwm_duty_cycle_buff+14
  567 0278 90E0      		ldi r25,0
  568 027a 2091 0000 		lds r18,spwm_tick_cnt
@@ -872,24 +887,27 @@ GAS LISTING /tmp/ccbqDSDv.s 			page 1
  570 0282 2817      		cp r18,r24
  571 0284 3907      		cpc r19,r25
  572 0286 00F4      		brsh .L49
- 573               		.loc 1 260 0 discriminator 3
- 574 0288 8BB1      		in r24,0xb
- 575 028a 8064      		ori r24,lo8(64)
+ 573               		.loc 1 275 0 discriminator 3
+ 574 0288 88B1      		in r24,0x8
+ 575 028a 8061      		ori r24,lo8(16)
  576 028c 00C0      		rjmp .L50
  577               	.L49:
- 578               		.loc 1 260 0 discriminator 4
- 579 028e 8BB1      		in r24,0xb
- 580 0290 8F7B      		andi r24,lo8(-65)
+ 578               		.loc 1 275 0 discriminator 4
+ 579 028e 88B1      		in r24,0x8
+ 580 0290 8F7E      		andi r24,lo8(-17)
  581               	.L50:
- 582               		.loc 1 260 0 discriminator 6
- 583 0292 8BB9      		out 0xb,r24
- 261:src/soft_pwm.c ****     __set_outp(SPWM_CH15_PORT, SPWM_CH15, SPWM_CH15_ID); // CH15
- 584               		.loc 1 261 0 is_stmt 1 discriminator 6
+ 582               		.loc 1 275 0 discriminator 6
+ 583 0292 88B9      		out 0x8,r24
+GAS LISTING /tmp/ccyuH0Xn.s 			page 16
+
+
+ 276:src/soft_pwm.c ****     __set_outp(SPWM_CH15_PORT, SPWM_CH15, SPWM_CH15_ID); // CH15
+ 584               		.loc 1 276 0 is_stmt 1 discriminator 6
  585 0294 8091 0000 		lds r24,spwm_en_state
  586 0298 9091 0000 		lds r25,spwm_en_state+1
  587 029c 9923      		tst r25
  588 029e 04F4      		brge .L51
- 589               		.loc 1 261 0 is_stmt 0 discriminator 1
+ 589               		.loc 1 276 0 is_stmt 0 discriminator 1
  590 02a0 8091 0000 		lds r24,spwm_duty_cycle_buff+15
  591 02a4 90E0      		ldi r25,0
  592 02a6 2091 0000 		lds r18,spwm_tick_cnt
@@ -897,75 +915,73 @@ GAS LISTING /tmp/ccbqDSDv.s 			page 1
  594 02ae 2817      		cp r18,r24
  595 02b0 3907      		cpc r19,r25
  596 02b2 00F4      		brsh .L51
- 597               		.loc 1 261 0 discriminator 3
-GAS LISTING /tmp/ccbqDSDv.s 			page 16
-
-
- 598 02b4 8BB1      		in r24,0xb
- 599 02b6 8068      		ori r24,lo8(-128)
+ 597               		.loc 1 276 0 discriminator 3
+ 598 02b4 88B1      		in r24,0x8
+ 599 02b6 8062      		ori r24,lo8(32)
  600 02b8 00C0      		rjmp .L52
  601               	.L51:
- 602               		.loc 1 261 0 discriminator 4
- 603 02ba 8BB1      		in r24,0xb
- 604 02bc 8F77      		andi r24,lo8(127)
+ 602               		.loc 1 276 0 discriminator 4
+ 603 02ba 88B1      		in r24,0x8
+ 604 02bc 8F7D      		andi r24,lo8(-33)
  605               	.L52:
- 606               		.loc 1 261 0 discriminator 6
- 607 02be 8BB9      		out 0xb,r24
- 262:src/soft_pwm.c **** 
- 263:src/soft_pwm.c ****     spwm_tick_cnt = (spwm_tick_cnt < SPWM_TOP_VAL) ? (spwm_tick_cnt + 1) : 0;
- 608               		.loc 1 263 0 is_stmt 1 discriminator 6
+ 606               		.loc 1 276 0 discriminator 6
+ 607 02be 88B9      		out 0x8,r24
+ 277:src/soft_pwm.c **** 
+ 278:src/soft_pwm.c ****     spwm_tick_cnt = (spwm_tick_cnt < SPWM_TOP_VAL) ? (spwm_tick_cnt + 1) : 0;
+ 608               		.loc 1 278 0 is_stmt 1 discriminator 6
  609 02c0 8091 0000 		lds r24,spwm_tick_cnt
  610 02c4 9091 0000 		lds r25,spwm_tick_cnt+1
  611 02c8 8F3F      		cpi r24,-1
  612 02ca 9105      		cpc r25,__zero_reg__
  613 02cc 00F4      		brsh .L54
- 614               		.loc 1 263 0 is_stmt 0 discriminator 1
+ 614               		.loc 1 278 0 is_stmt 0 discriminator 1
  615 02ce 8091 0000 		lds r24,spwm_tick_cnt
  616 02d2 9091 0000 		lds r25,spwm_tick_cnt+1
  617 02d6 0196      		adiw r24,1
  618 02d8 00C0      		rjmp .L53
  619               	.L54:
- 620               		.loc 1 263 0
+ 620               		.loc 1 278 0
  621 02da 80E0      		ldi r24,0
  622 02dc 90E0      		ldi r25,0
  623               	.L53:
- 624               		.loc 1 263 0 discriminator 4
+ 624               		.loc 1 278 0 discriminator 4
  625 02de 9093 0000 		sts spwm_tick_cnt+1,r25
  626 02e2 8093 0000 		sts spwm_tick_cnt,r24
  627 02e6 0895      		ret
  628               		.cfi_endproc
  629               	.LFE1:
- 631               		.section	.bss.spwm_en_state,"aw",@nobits
- 634               	spwm_en_state:
- 635 0000 0000      		.zero	2
- 636               		.section	.bss.spwm_tick_cnt,"aw",@nobits
- 639               	spwm_tick_cnt:
- 640 0000 0000      		.zero	2
- 641               	.global	spwm_duty_cycle_buff
- 642               		.section	.bss.spwm_duty_cycle_buff,"aw",@nobits
- 645               	spwm_duty_cycle_buff:
- 646 0000 0000 0000 		.zero	16
- 646      0000 0000 
- 646      0000 0000 
- 646      0000 0000 
- 647               		.text
- 648               	.Letext0:
- 649               		.file 2 "/usr/lib/avr/include/stdint.h"
-GAS LISTING /tmp/ccbqDSDv.s 			page 17
+ 631               		.comm	spwm_en_state,2,1
+ 632               		.section	.bss.spwm_tick_cnt,"aw",@nobits
+ 635               	spwm_tick_cnt:
+ 636 0000 0000      		.zero	2
+ 637               	.global	spwm_duty_cycle_buff
+ 638               		.section	.bss.spwm_duty_cycle_buff,"aw",@nobits
+ 641               	spwm_duty_cycle_buff:
+ 642 0000 0000 0000 		.zero	16
+GAS LISTING /tmp/ccyuH0Xn.s 			page 17
+
+
+ 642      0000 0000 
+ 642      0000 0000 
+ 642      0000 0000 
+ 643               		.text
+ 644               	.Letext0:
+ 645               		.file 2 "/usr/lib/avr/include/stdint.h"
+GAS LISTING /tmp/ccyuH0Xn.s 			page 18
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 soft_pwm.c
-     /tmp/ccbqDSDv.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/ccbqDSDv.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/ccbqDSDv.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/ccbqDSDv.s:5      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccbqDSDv.s:6      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccbqDSDv.s:13     .text.spwm_init:0000000000000000 spwm_init
-     /tmp/ccbqDSDv.s:634    .bss.spwm_en_state:0000000000000000 spwm_en_state
-     /tmp/ccbqDSDv.s:639    .bss.spwm_tick_cnt:0000000000000000 spwm_tick_cnt
-     /tmp/ccbqDSDv.s:645    .bss.spwm_duty_cycle_buff:0000000000000000 spwm_duty_cycle_buff
-     /tmp/ccbqDSDv.s:216    .text.spwm_tick:0000000000000000 spwm_tick
+     /tmp/ccyuH0Xn.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccyuH0Xn.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccyuH0Xn.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccyuH0Xn.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccyuH0Xn.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccyuH0Xn.s:13     .text.spwm_init:0000000000000000 spwm_init
+                            *COM*:0000000000000002 spwm_en_state
+     /tmp/ccyuH0Xn.s:635    .bss.spwm_tick_cnt:0000000000000000 spwm_tick_cnt
+     /tmp/ccyuH0Xn.s:641    .bss.spwm_duty_cycle_buff:0000000000000000 spwm_duty_cycle_buff
+     /tmp/ccyuH0Xn.s:216    .text.spwm_tick:0000000000000000 spwm_tick
 
 UNDEFINED SYMBOLS
 __do_clear_bss

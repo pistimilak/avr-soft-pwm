@@ -17,7 +17,7 @@
 #endif
 
 static volatile uint16_t spwm_tick_cnt = 0;
-static volatile  uint16_t spwm_en_state = 0;
+volatile uint16_t spwm_en_state;
 
 #if SPWM_USE_PORT_BUFFERING
 /*Buffering port, if used*/
@@ -25,6 +25,33 @@ static volatile  uint16_t spwm_en_state = 0;
 static volatile uint8_t spwm_port_buff[SPWM_MAX_PORT_NUM] = {0};
 #endif
 
+
+
+#if SPWM_USE_PORT_BUFFERING
+    #if SPWM_MODE == SPWM_MODE_NON_INVERTING
+        #define __set_outp(port_buff, port, ch_outp, ch_id)        port_buff = spwm_get_port_buff(&port); \
+                                                                    *port_buff = ((spwm_en_state & (0x0001 << ch_id)) && (spwm_tick_cnt < spwm_duty_cycle_buff[ch_id])) ? \
+                                                                    (*port_buff | (1 << ch_outp)) : (*port_buff & ~(1 << ch_outp))
+    #else
+        #define __set_outp(port_buff, port, ch_outp, ch_id)        port_buff = spwm_get_port_buff(&port); \
+                                                                    *port_buff = ((spwm_en_state & (0x0001 << ch_id)) && (spwm_tick_cnt > spwm_duty_cycle_buff[ch_id])) ? \
+                                                                    (*port_buff | (1 << ch_outp)) : (*port_buff & ~(1 << ch_outp))
+    #endif
+#else
+    #if SPWM_MODE == SPWM_MODE_NON_INVERTING
+        #define __set_outp(port, ch_outp, ch_id)                   port = ((spwm_en_state & (0x0001 << ch_id)) && (spwm_tick_cnt < spwm_duty_cycle_buff[ch_id])) ? \
+                                                                    (port | (1 << ch_outp)) : (port & ~(1 << ch_outp))
+    #else
+        #define __set_outp(port, ch_outp, ch_id)                   port = ((spwm_en_state & (0x0001 << ch_id)) && (spwm_tick_cnt > spwm_duty_cycle_buff[ch_id])) ? \
+                                                                    (port | (1 << ch_outp)) : (port & ~(1 << ch_outp))
+    #endif
+#endif
+
+/**
+ * @brief 
+ * 
+ * @param en_state 
+ */
 void spwm_init(uint16_t en_state)
 {
     //reset values
@@ -37,25 +64,31 @@ void spwm_init(uint16_t en_state)
     for(i = 0; i < SPWM_MAX_CHANNEL_NUM; spwm_duty_cycle_buff[i] = 0, i++);
 
     // init DDR
-    if(spwm_en_state & (1 << SPWM_CH0_ID)) SPWM_CH0_DDR |= (1 << SPWM_CH0);
-    if(spwm_en_state & (1 << SPWM_CH1_ID)) SPWM_CH1_DDR |= (1 << SPWM_CH1);
-    if(spwm_en_state & (1 << SPWM_CH2_ID)) SPWM_CH2_DDR |= (1 << SPWM_CH2);
-    if(spwm_en_state & (1 << SPWM_CH3_ID)) SPWM_CH3_DDR |= (1 << SPWM_CH3);
-    if(spwm_en_state & (1 << SPWM_CH4_ID)) SPWM_CH4_DDR |= (1 << SPWM_CH4);
-    if(spwm_en_state & (1 << SPWM_CH5_ID)) SPWM_CH5_DDR |= (1 << SPWM_CH5);
-    if(spwm_en_state & (1 << SPWM_CH6_ID)) SPWM_CH6_DDR |= (1 << SPWM_CH6);
-    if(spwm_en_state & (1 << SPWM_CH7_ID)) SPWM_CH7_DDR |= (1 << SPWM_CH7);
-    if(spwm_en_state & (1 << SPWM_CH8_ID)) SPWM_CH8_DDR |= (1 << SPWM_CH8);
-    if(spwm_en_state & (1 << SPWM_CH9_ID)) SPWM_CH9_DDR |= (1 << SPWM_CH9);
-    if(spwm_en_state & (1 << SPWM_CH10_ID)) SPWM_CH10_DDR |= (1 << SPWM_CH10);
-    if(spwm_en_state & (1 << SPWM_CH11_ID)) SPWM_CH11_DDR |= (1 << SPWM_CH11);
-    if(spwm_en_state & (1 << SPWM_CH12_ID)) SPWM_CH12_DDR |= (1 << SPWM_CH12);
-    if(spwm_en_state & (1 << SPWM_CH13_ID)) SPWM_CH13_DDR |= (1 << SPWM_CH13);
-    if(spwm_en_state & (1 << SPWM_CH14_ID)) SPWM_CH14_DDR |= (1 << SPWM_CH14);
-    if(spwm_en_state & (1 << SPWM_CH15_ID)) SPWM_CH15_DDR |= (1 << SPWM_CH15);
+    if(spwm_en_state & (0x0001 << SPWM_CH0_ID)) SPWM_CH0_DDR |= (1 << SPWM_CH0);
+    if(spwm_en_state & (0x0001 << SPWM_CH1_ID)) SPWM_CH1_DDR |= (1 << SPWM_CH1);
+    if(spwm_en_state & (0x0001 << SPWM_CH2_ID)) SPWM_CH2_DDR |= (1 << SPWM_CH2);
+    if(spwm_en_state & (0x0001 << SPWM_CH3_ID)) SPWM_CH3_DDR |= (1 << SPWM_CH3);
+    if(spwm_en_state & (0x0001 << SPWM_CH4_ID)) SPWM_CH4_DDR |= (1 << SPWM_CH4);
+    if(spwm_en_state & (0x0001 << SPWM_CH5_ID)) SPWM_CH5_DDR |= (1 << SPWM_CH5);
+    if(spwm_en_state & (0x0001 << SPWM_CH6_ID)) SPWM_CH6_DDR |= (1 << SPWM_CH6);
+    if(spwm_en_state & (0x0001 << SPWM_CH7_ID)) SPWM_CH7_DDR |= (1 << SPWM_CH7);
+    if(spwm_en_state & (0x0001 << SPWM_CH8_ID)) SPWM_CH8_DDR |= (1 << SPWM_CH8);
+    if(spwm_en_state & (0x0001 << SPWM_CH9_ID)) SPWM_CH9_DDR |= (1 << SPWM_CH9);
+    if(spwm_en_state & (0x0001 << SPWM_CH10_ID)) SPWM_CH10_DDR |= (1 << SPWM_CH10);
+    if(spwm_en_state & (0x0001 << SPWM_CH11_ID)) SPWM_CH11_DDR |= (1 << SPWM_CH11);
+    if(spwm_en_state & (0x0001 << SPWM_CH12_ID)) SPWM_CH12_DDR |= (1 << SPWM_CH12);
+    if(spwm_en_state & (0x0001 << SPWM_CH13_ID)) SPWM_CH13_DDR |= (1 << SPWM_CH13);
+    if(spwm_en_state & (0x0001 << SPWM_CH14_ID)) SPWM_CH14_DDR |= (1 << SPWM_CH14);
+    if(spwm_en_state & (0x0001 << SPWM_CH15_ID)) SPWM_CH15_DDR |= (1 << SPWM_CH15);
 }
 
 #if SPWM_USE_PORT_BUFFERING
+/**
+ * @brief 
+ * 
+ * @param uint8_t 
+ * @return uint8_t* 
+ */
 static uint8_t* spwm_get_port_buff(volatile uint8_t *port) 
 {
     switch ((uint16_t)port) {
@@ -95,10 +128,11 @@ static uint8_t* spwm_get_port_buff(volatile uint8_t *port)
             return (uint8_t *)0;
     }
 }
-#endif
 
-
-#if SPWM_USE_PORT_BUFFERING
+/**
+ * @brief 
+ * 
+ */
 static void spwm_buffering_ports()
 {
 #ifdef PORTA
@@ -142,9 +176,11 @@ static void spwm_buffering_ports()
     #endif
 #endif
 }
-#endif
 
-#if SPWM_USE_PORT_BUFFERING
+/**
+ * @brief 
+ * 
+ */
 static void spwm_write_ports()
 {
 #ifdef PORTA
@@ -188,32 +224,6 @@ static void spwm_write_ports()
     #endif
 #endif
 }
-#endif
-
-
-
-#if SPWM_USE_PORT_BUFFERING
-    #if SPWM_MODE == SPWM_MODE_NON_INVERTING
-        #define __set_outp(port_buff, port, ch_outp, ch_id)        port_buff = spwm_get_port_buff(&port); \
-                                                                    *port_buff = ((spwm_en_state & (1 << ch_id)) && (spwm_tick_cnt < spwm_duty_cycle_buff[ch_id])) ? \
-                                                                    (*port_buff | (1 << ch_outp)) : (*port_buff & ~(1 << ch_outp))
-    #else
-        #define __set_outp(port_buff, port, ch_outp, ch_id)        port_buff = spwm_get_port_buff(&port); \
-                                                                    *port_buff = ((spwm_en_state & (1 << ch_id)) && (spwm_tick_cnt > spwm_duty_cycle_buff[ch_id])) ? \
-                                                                    (*port_buff | (1 << ch_outp)) : (*port_buff & ~(1 << ch_outp))
-    #endif
-#else
-    #if SPWM_MODE == SPWM_MODE_NON_INVERTING
-        #define __set_outp(port, ch_outp, ch_id)                   port = ((spwm_en_state & (1 << ch_id)) && (spwm_tick_cnt < spwm_duty_cycle_buff[ch_id])) ? \
-                                                                    (port | (1 << ch_outp)) : (port & ~(1 << ch_outp))
-    #else
-        #define __set_outp(port, ch_outp, ch_id)                   port = ((spwm_en_state & (1 << ch_id)) && (spwm_tick_cnt > spwm_duty_cycle_buff[ch_id])) ? \
-                                                                    (port | (1 << ch_outp)) : (port & ~(1 << ch_outp))
-    #endif
-#endif
-
-
-#if SPWM_USE_PORT_BUFFERING
 void spwm_tick()
 {
 
@@ -242,6 +252,10 @@ void spwm_tick()
     spwm_tick_cnt = (spwm_tick_cnt < SPWM_TOP_VAL) ? (spwm_tick_cnt + 1) : 0;
 }
 #else
+/**
+ * @brief 
+ * 
+ */
 void spwm_tick()
 {
     __set_outp(SPWM_CH0_PORT, SPWM_CH0, SPWM_CH0_ID);    // CH0
