@@ -53,67 +53,67 @@ A little bit slower then not buffering
 
 /*Output configuration*/
 // CH0
-#define SPWM_CH0                 PD0
+#define SPWM_CH0                 PD2
 #define SPWM_CH0_DDR             DDRD
 #define SPWM_CH0_PORT            PORTD
 // CH1
-#define SPWM_CH1                 PD1
+#define SPWM_CH1                 PD3
 #define SPWM_CH1_DDR             DDRD
 #define SPWM_CH1_PORT            PORTD
 // CH2
-#define SPWM_CH2                 PD2
+#define SPWM_CH2                 PD4
 #define SPWM_CH2_DDR             DDRD
 #define SPWM_CH2_PORT            PORTD
 // CH3
-#define SPWM_CH3                 PD3
+#define SPWM_CH3                 PD5
 #define SPWM_CH3_DDR             DDRD
 #define SPWM_CH3_PORT            PORTD
 // CH4
-#define SPWM_CH4                 PD4
+#define SPWM_CH4                 PD6
 #define SPWM_CH4_DDR             DDRD
 #define SPWM_CH4_PORT            PORTD
 // CH5
-#define SPWM_CH5                 PD5
+#define SPWM_CH5                 PD7
 #define SPWM_CH5_DDR             DDRD
 #define SPWM_CH5_PORT            PORTD
 // CH6
-#define SPWM_CH6                 PD6
-#define SPWM_CH6_DDR             DDRD
-#define SPWM_CH6_PORT            PORTD
+#define SPWM_CH6                 PB0
+#define SPWM_CH6_DDR             DDRB
+#define SPWM_CH6_PORT            PORTB
 // CH7
-#define SPWM_CH7                 PD7
-#define SPWM_CH7_DDR             DDRD
-#define SPWM_CH7_PORT            PORTD
+#define SPWM_CH7                 PB1
+#define SPWM_CH7_DDR             DDRB
+#define SPWM_CH7_PORT            PORTB
 // CH8
-#define SPWM_CH8                 PB0
+#define SPWM_CH8                 PB5
 #define SPWM_CH8_DDR             DDRB
 #define SPWM_CH8_PORT            PORTB
 // CH9
-#define SPWM_CH9                 PB1
+#define SPWM_CH9                 PB3
 #define SPWM_CH9_DDR             DDRB
 #define SPWM_CH9_PORT            PORTB
 // CH10
-#define SPWM_CH10                PB2
+#define SPWM_CH10                PB4
 #define SPWM_CH10_DDR            DDRB
 #define SPWM_CH10_PORT           PORTB
 // CH11
-#define SPWM_CH11                PB3
-#define SPWM_CH11_DDR            DDRB
-#define SPWM_CH11_PORT           PORTB
+#define SPWM_CH11                PC0
+#define SPWM_CH11_DDR            DDRC
+#define SPWM_CH11_PORT           PORTC
 // CH12
-#define SPWM_CH12                PB4
-#define SPWM_CH12_DDR            DDRB
-#define SPWM_CH12_PORT           PORTB
+#define SPWM_CH12                PC1
+#define SPWM_CH12_DDR            DDRC
+#define SPWM_CH12_PORT           PORTC
 // CH13
-#define SPWM_CH13                PB5
-#define SPWM_CH13_DDR            DDRB
-#define SPWM_CH13_PORT           PORTB
+#define SPWM_CH13                PC2
+#define SPWM_CH13_DDR            DDRC
+#define SPWM_CH13_PORT           PORTC
 // CH14
-#define SPWM_CH14                PC4
+#define SPWM_CH14                PC3
 #define SPWM_CH14_DDR            DDRC
 #define SPWM_CH14_PORT           PORTC
 // CH15
-#define SPWM_CH15                PC5
+#define SPWM_CH15                PC4
 #define SPWM_CH15_DDR            DDRC
 #define SPWM_CH15_PORT           PORTC
 

@@ -24,10 +24,7 @@
 #define SPWM_CH14_ID             14
 #define SPWM_CH15_ID             15
 
-// #define spwm_set_en_state(state)            spwm_en_state = state
-#define spwm_set_ch(id,val)                 spwm_duty_cycle_buff[id] = val
-#define spwm_ch_enable(id)                  (spwm_en_state |= (1 << id))
-#define spwm_is_ch_enabled(id)              (spwm_en_state & (1 << id))
+
 
 #if SPWM_USE_PORT_BUFFERING
 #define SPWM_PORTA_BUFF_IDX      0
@@ -83,13 +80,19 @@
 
 
 #if SPWM_TOP_VAL > 255 && SPWM_TOP_VAL < 65536
-    extern volatile uint16_t spwm_duty_cycle_buff[SPWM_MAX_CHANNEL_NUM];
+    volatile extern uint16_t spwm_duty_cycle_buff[SPWM_MAX_CHANNEL_NUM];
+    // inline void spwm_set_ch(uint8_t id, uint16_t val);
 #else
-    extern volatile uint8_t spwm_duty_cycle_buff[SPWM_MAX_CHANNEL_NUM];
+    volatile extern uint8_t spwm_duty_cycle_buff[SPWM_MAX_CHANNEL_NUM];
+    // inline void spwm_set_ch(uint8_t id, uint8_t val);
 #endif
 // extern spwm_duty_cycle_buff[SPWM_MAX_CHANNEL_NUM];
-extern volatile uint16_t spwm_en_state;
+// extern volatile uint16_t spwm_en_state;
+
 void spwm_init(uint16_t en_state);
 void spwm_tick();
-
+// #define spwm_set_en_state(state)            spwm_en_state = state
+#define spwm_set_ch(id,val)                 spwm_duty_cycle_buff[id] = val
+// #define spwm_ch_enable(id)                  (spwm_en_state |= (1 << id))
+// #define spwm_is_ch_enabled(id)              (spwm_en_state & (1 << id))
 #endif

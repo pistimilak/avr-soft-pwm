@@ -10,113 +10,85 @@
  */
 
 #ifndef F_CPU
-#define F_CPU   16000000UL
+#define F_CPU   (16000000UL)
 #endif
 
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
+#include "soft_pwm.h"
+#include "sig.h"
+
+#define LED_NUM     9
+#define SIG_LENGTH  512
 
 
-#define ARDUINO_DEMO    0
-
-#if ARDUINO_DEMO
-    #define ARDUION_LED         PB5
-    #define DDR_ARDUINO_LED     DDRB
-    #define PORT_ARDUINO_LED    PORTB
-#else
-    #include "soft_pwm.h"
-    // #include "sig.h"
-
-
-    // void Init();
-    // volatile const uint8_t sin_signal[100] =
-    // {
-    // 128,136,143,151,159,167,174,182,
-    // 189,196,202,209,215,220,226,231,
-    // 235,239,243,246,249,251,253,254,
-    // 255,255,255,254,253,251,249,246,
-    // 243,239,235,231,226,220,215,209,
-    // 202,196,189,182,174,167,159,151,
-    // 143,136,128,119,112,104,96,88,
-    // 81,73,66,59,53,46,40,35,
-    // 29,24,20,16,12,9,6,4,
-    // 2,1,0,0,0,1,2,4,
-    // 6,9,12,16,20,24,29,35,
-    // 40,46,53,59,66,73,81,88,
-    // 96,104,112,119
-    // };
-#endif
+void idle_hook();
+void Init();
+sig_t leds[LED_NUM];
+extern const sig_val_t sin_signal[512];
 
 
 int main(void)
 {
-
-#if ARDUINO_DEMO
-    DDR_ARDUINO_LED |= (1 << ARDUION_LED);
+    Init();
+    
     while(1) {
-        PORT_ARDUINO_LED ^= (1 << ARDUION_LED);
-        _delay_ms(1000);
-
     }
-#else
-    DDRB |= (1 << PB5);
-    // spwm_init(0xffff); // enable ch2
-    spwm_en_state = 0xffff;
-    SPWM_CH2_DDR |= (1 << SPWM_CH2);
-    if(spwm_en_state) {
-        PORTB |= (1 << PB5);
-        _delay_ms(1000);
-        PORTB &= ~(1 << PB5);
-        _delay_ms(1000);
-    }
-
-    while(1) {
-        // spwm_tick();
-    }
-
-#endif
 
     return 0;
 }
-#if !ARDUINO_DEMO
+
+void idle_hook()
+{
+    DDRB |= (1 << PB5);
+    while(1) {
+        PORTB ^= (1 << PB5);
+        _delay_ms(500);
+    }
+}
+
+void Init()
+{
+    
+    uint8_t i;
+    spwm_init(0x01ff); // enable channels
+    
+    /*Init signals*/
+    for(i = 0; i < LED_NUM; i++) {
+        leds[i] = sig_init(sin_signal, SIG_LENGTH, i * 10);
+        spwm_set_ch(i, sig_get_val(&leds[i]));
+    }
+
+    /*Init Timer0 for spwm*/
+    /*Prescale 8, CTC mode*/
+    TCCR0A |= (1 << WGM01);
+    TCCR0B |= (0 << CS02) | (0 << CS01) | (1 << CS00);
+    TIMSK0 |= (1 << OCIE0A);
+    OCR0A = 100;
+
+    /*Init Timer1 for signal tracking*/
+    TCCR1A |= 0;
+    TCCR1B |= (1 << WGM12) | (0 << CS12) | (1 << CS01) | (1 << CS10); //Prescale 128, CTC mode
+    TIMSK1 |= (1 << OCIE1A);
+    OCR1A = 2000;
+    sei();
 
 
+}
 
-// void Init()
-// {
-//     /*Init PWM*/
-//     spwm_init(0xffff);
-//     // spwm_set_ch(0, 127);
-//     // spwm_set_ch(1, 24);
-//     // spwm_set_ch(2, 78);
-//     // spwm_set_ch(3, 200);
-//     // spwm_set_ch(4, 180);
-//     // spwm_set_ch(5, 128);
-//     // spwm_set_ch(6, 54);
-//     // spwm_set_ch(7, 90);
-//     // spwm_set_ch(8, 0);
-//     // spwm_set_ch(9, 234);
-//     // spwm_set_ch(10, 255);
-//     // spwm_set_ch(11, 128);
-//     // spwm_set_ch(12, 3);
-//     // spwm_set_ch(14, 4);
-//     // spwm_set_ch(15, 168);
-//     // DDRB |= (1 << PB5);
-//     // TCCR2A = (1 << WGM21); // CTC mode
-//     // TCCR2B = (1 << CS22) | (1 << CS21) | (1 << CS20); //prescale 1024
-//     // OCR2A = 100;
-//     // TIMSK2 = (1 << OCIE2A);
-//     // sei();
-//     led1 = (volatile sig_t)sig_init(sin_signal, 512, 0);
-// }
+ISR(TIMER0_COMPA_vect)
+{
+    // PORTB ^= (1 << PB5);
+    spwm_tick();
+}
 
-// ISR(TIMER2_COMPA_vect)
-// {
-//     // spwm_tick();
-//     PORTB ^= (1 << PB5);
-// }
-
-
-#endif
+ISR(TIMER1_COMPA_vect)
+{
+    uint8_t i;
+    for(i = 0; i < LED_NUM; i++) {
+        spwm_set_ch(i, sig_get_val(&leds[i]));
+        sig_tick(&leds[i]);
+    }
+}

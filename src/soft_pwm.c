@@ -8,6 +8,12 @@
  * @copyright Copyright (c) 2019
  * 
  */
+
+#ifndef F_CPU
+#define F_CPU   (16000000UL)
+#endif
+
+#include <util/delay.h>
 #include "soft_pwm.h"
 
 #if SPWM_TOP_VAL > 255 && SPWM_TOP_VAL < 65536
@@ -16,36 +22,20 @@
     volatile uint8_t spwm_duty_cycle_buff[SPWM_MAX_CHANNEL_NUM] = {0};
 #endif
 
-static volatile uint16_t spwm_tick_cnt = 0;
-volatile uint16_t spwm_en_state;
+
 
 #if SPWM_USE_PORT_BUFFERING
 /*Buffering port, if used*/
 /*A, B, C, D, E, F, G, H*/
-static volatile uint8_t spwm_port_buff[SPWM_MAX_PORT_NUM] = {0};
+volatile static uint8_t spwm_port_buff[SPWM_MAX_PORT_NUM] = {0};
 #endif
 
 
+volatile static uint16_t spwm_tick_cnt = 0;
+volatile static uint16_t spwm_en_state = 0;
 
-#if SPWM_USE_PORT_BUFFERING
-    #if SPWM_MODE == SPWM_MODE_NON_INVERTING
-        #define __set_outp(port_buff, port, ch_outp, ch_id)        port_buff = spwm_get_port_buff(&port); \
-                                                                    *port_buff = ((spwm_en_state & (0x0001 << ch_id)) && (spwm_tick_cnt < spwm_duty_cycle_buff[ch_id])) ? \
-                                                                    (*port_buff | (1 << ch_outp)) : (*port_buff & ~(1 << ch_outp))
-    #else
-        #define __set_outp(port_buff, port, ch_outp, ch_id)        port_buff = spwm_get_port_buff(&port); \
-                                                                    *port_buff = ((spwm_en_state & (0x0001 << ch_id)) && (spwm_tick_cnt > spwm_duty_cycle_buff[ch_id])) ? \
-                                                                    (*port_buff | (1 << ch_outp)) : (*port_buff & ~(1 << ch_outp))
-    #endif
-#else
-    #if SPWM_MODE == SPWM_MODE_NON_INVERTING
-        #define __set_outp(port, ch_outp, ch_id)                   port = ((spwm_en_state & (0x0001 << ch_id)) && (spwm_tick_cnt < spwm_duty_cycle_buff[ch_id])) ? \
-                                                                    (port | (1 << ch_outp)) : (port & ~(1 << ch_outp))
-    #else
-        #define __set_outp(port, ch_outp, ch_id)                   port = ((spwm_en_state & (0x0001 << ch_id)) && (spwm_tick_cnt > spwm_duty_cycle_buff[ch_id])) ? \
-                                                                    (port | (1 << ch_outp)) : (port & ~(1 << ch_outp))
-    #endif
-#endif
+extern void idle_hook();
+
 
 /**
  * @brief 
@@ -58,6 +48,8 @@ void spwm_init(uint16_t en_state)
     spwm_en_state = en_state;
     spwm_tick_cnt = 0;
     uint8_t i;
+
+    
 #if SPWM_USE_PORT_BUFFERING
     for(i = 0; i < SPWM_MAX_PORT_NUM; spwm_port_buff[i] = 0, i++);
 #endif
@@ -224,6 +216,18 @@ static void spwm_write_ports()
     #endif
 #endif
 }
+
+#if SPWM_MODE == SPWM_MODE_NON_INVERTING
+    #define __set_outp(port_buff, port, ch_outp, ch_id)        port_buff = spwm_get_port_buff(&port); \
+                                                                *port_buff = ((spwm_en_state & (0x0001 << ch_id)) && (spwm_tick_cnt < spwm_duty_cycle_buff[ch_id])) ? \
+                                                                (*port_buff | (1 << ch_outp)) : (*port_buff & ~(1 << ch_outp))
+#else
+    #define __set_outp(port_buff, port, ch_outp, ch_id)        port_buff = spwm_get_port_buff(&port); \
+                                                                *port_buff = ((spwm_en_state & (0x0001 << ch_id)) && (spwm_tick_cnt > spwm_duty_cycle_buff[ch_id])) ? \
+                                                                (*port_buff | (1 << ch_outp)) : (*port_buff & ~(1 << ch_outp))
+#endif
+
+
 void spwm_tick()
 {
 
@@ -252,12 +256,31 @@ void spwm_tick()
     spwm_tick_cnt = (spwm_tick_cnt < SPWM_TOP_VAL) ? (spwm_tick_cnt + 1) : 0;
 }
 #else
+
+
+#if SPWM_MODE == SPWM_MODE_NON_INVERTING
+    
+    #define __set_outp(port, ch_outp, ch_id)                   port = ((spwm_en_state & (0x0001 << ch_id)) && (spwm_tick_cnt < spwm_duty_cycle_buff[ch_id])) ? \
+                                                                (port | (1 << ch_outp)) : (port & ~(1 << ch_outp))
+    
+    // #define __set_outp(port, ch_outp, ch_id)                   port = ((spwm_tick_cnt < spwm_duty_cycle_buff[ch_id])) ? (port | (1 << ch_outp)) : (port & ~(1 << ch_outp))
+#else
+    #define __set_outp(port, ch_outp, ch_id)                   port = ((spwm_en_state & (0x0001 << ch_id)) && (spwm_tick_cnt > spwm_duty_cycle_buff[ch_id])) ? \
+                                                                (port | (1 << ch_outp)) : (port & ~(1 << ch_outp))
+#endif
+
 /**
  * @brief 
  * 
  */
 void spwm_tick()
 {
+    // idle_hook();
+    // PORTD = ((spwm_tick_cnt < spwm_duty_cycle_buff[0])) ? (PORTD | (1 << PD2)) : (PORTD & ~(1 << PD2));
+    // // if(spwm_duty_cycle_buff[0] == 127) {
+    // //     idle_hook();
+    // // }    
+
     __set_outp(SPWM_CH0_PORT, SPWM_CH0, SPWM_CH0_ID);    // CH0
     __set_outp(SPWM_CH1_PORT, SPWM_CH1, SPWM_CH1_ID);    // CH1
     __set_outp(SPWM_CH2_PORT, SPWM_CH2, SPWM_CH2_ID);    // CH2
@@ -277,4 +300,14 @@ void spwm_tick()
 
     spwm_tick_cnt = (spwm_tick_cnt < SPWM_TOP_VAL) ? (spwm_tick_cnt + 1) : 0;
 }
+
+
+// #if SPWM_TOP_VAL > 255 && SPWM_TOP_VAL < 65536
+//     inline void spwm_set_ch(uint8_t id, uint16_t val);
+// #else
+//     inline void spwm_set_ch(uint8_t id, uint8_t val){
+//         if(id < 0 || id >= SPWM_MAX_CHANNEL_NUM) return;
+//         spwm_duty_cycle_buff[id] = val;
+//     }
+// #endif
 #endif

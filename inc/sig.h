@@ -42,7 +42,7 @@ typedef struct
  * @param phase_offset
  * @return led_sig_t
  */
-extern sig_t        sig_init(sig_val_t *signal, sig_size_t sig_size, sig_size_t phase_offset);
+sig_t        sig_init(sig_val_t *signal, sig_size_t sig_size, sig_size_t phase_offset);
 
 
 
@@ -51,7 +51,7 @@ extern sig_t        sig_init(sig_val_t *signal, sig_size_t sig_size, sig_size_t 
  *
  * @param signal signal struct
  */
-extern void         sig_tick(sig_t *signal);
+void         sig_tick(sig_t *signal);
 
 /**
  * @brief Return a LED value which is pointed by pval
@@ -59,6 +59,6 @@ extern void         sig_tick(sig_t *signal);
  * @param signal signal struct
  * @return led_val_t LED val
  */
-extern sig_val_t    sig_get_val(sig_t *signal);
+sig_val_t    sig_get_val(sig_t *signal);
 
 #endif // __LED_SIG_H__

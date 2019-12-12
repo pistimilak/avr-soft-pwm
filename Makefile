@@ -1,175 +1,55 @@
-######################################
-# Makefile
-# The template used from Stm32fx CubeMX
-#####################################
-
-######################################
-# PROJECT
-######################################
-PROJECT = avr-soft-pwm
-TARGET = atmega328p
+NAME = avr-soft-pwm
+CC = avr-gcc
+OBJCOPY = avr-objcopy
 PROG_SOFT = avrdude
-# PROG_DEV = arduino
-# DEV_PORT = /dev/ttyACM0
-PROG_DEV = avrispmkii
-DEV_PORT = usb
+PROG_DEV = arduino
+DEV_PORT = /dev/ttyUSB0
+
+TARGET = atmega328p
+BUILD_PATH = ./build
+SRC_PATH = ./src
+HEX_PATH = ./hex
+BIN_PATH = ./bin
+DOCS_PATH = ./docs
+
+OBJS = $(BUILD_PATH)/main.o $(BUILD_PATH)/soft_pwm.o $(BUILD_PATH)/sig.o $(BUILD_PATH)/sin.o
+DEPS = 
+
+CFLAGS = -mmcu=$(TARGET) -Os -Iinc
+ASMFLAGS = -xassembler-with-cpp -mmcu=$(TARGET) -nostdlib
+# ASMFLAGS = -mmcu=$(TARGET)
+LIBS = 
+
+$(BUILD_PATH)/%.o: $(SRC_PATH)/%.c
+	$(CC)  $(CFLAGS) -c -o $@ $<
 
 
-######################################
-# building variables
-######################################
-# debug build?
-DEBUG = 1
-# optimization
-OPT = -Og
 
 
-#######################################
-# paths
-#######################################
-# Build path
-BUILD_DIR = build
-BIN_DIR = bin
-HEX_DIR = hex
-######################################
-# source
-######################################
-# C sources
-C_SOURCES =  \
-src/main.c \
-src/sig.c \
-src/sin.c \
-src/soft_pwm.c
-
-
-# ASM sources
-ASM_SOURCES =  
-
-
-#######################################
-# binaries
-#######################################
-PREFIX =avr-
-# The gcc compiler bin path can be either defined in make command via GCC_PATH variable (> make GCC_PATH=xxx)
-# either it can be added to the PATH environment variable.
-ifdef GCC_PATH
-CC = $(GCC_PATH)/$(PREFIX)gcc
-AS = $(GCC_PATH)/$(PREFIX)gcc -x assembler-with-cpp
-CP = $(GCC_PATH)/$(PREFIX)objcopy
-SZ = $(GCC_PATH)/$(PREFIX)size
-else
-CC = $(PREFIX)gcc
-AS = $(PREFIX)gcc -x assembler-with-cpp
-CP = $(PREFIX)objcopy
-SZ = $(PREFIX)size
-endif
-BIN = $(CP) -O binary -S
-
-#######################################
-# CFLAGS
-#######################################
-# macros for gcc
-# AS defines
-AS_DEFS =
-
-# C defines
-C_DEFS = 
-
-
-# AS includes
-AS_INCLUDES =  \
--I/inc
-
-# C includes
-C_INCLUDES =  \
--Iinc \
-
-# compile gcc flags
-ASFLAGS = -xassembler-with-cpp -mmcu=$(TARGET) -nostdlib
-
-CFLAGS = -mmcu=$(TARGET) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
-
-ifeq ($(DEBUG), 1)
-CFLAGS += -g -gdwarf-2
-endif
-
-
-# Generate dependency information
-CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
-
-
-#######################################
-# LDFLAGS
-#######################################
-# link script
-
-
-# libraries
-LIBS =
-LIBDIR =
-LDFLAGS = 
-# default action: build all
-all: $(BIN_DIR)/$(PROJECT).elf $(HEX_DIR)/$(PROJECT).hex
-
-
-#######################################
-# build the application
-#######################################
-# list of objects
-OBJECTS = $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
-vpath %.c $(sort $(dir $(C_SOURCES)))
-# list of ASM program objects
-OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
-vpath %.s $(sort $(dir $(ASM_SOURCES)))
-
-$(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR)
-	$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) $< -o $@
-
-$(BUILD_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
-	$(AS) -c $(CFLAGS) $< -o $@
-
-$(BIN_DIR)/$(PROJECT).elf: $(OBJECTS) Makefile
-	$(CC) $(OBJECTS) $(LDFLAGS) -o $@
-	$(SZ) $@
-
-$(HEX_DIR)/$(PROJECT).hex: $(BIN_DIR)/$(PROJECT).elf Makefile
-	$(CP) -O ihex -R .eeprom $< $@
-	$(SZ) $@
-
-
-$(BUILD_DIR)/%.hex: $(BULD_DIR)/%.elf | $(BUILD_DIR)
-	$(HEX) $< $@
+$(HEX_PATH)/$(NAME).hex: $(BIN_PATH)/$(NAME).elf
+	$(OBJCOPY) -O ihex -R .eeprom $< $@
 	
-$(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
-	$(BIN) $< $@	
-	
-$(BUILD_DIR):
-	mkdir $@		
 
-.PHONY: clean deploy-flash deploy-eeprom set-fuse
+$(BIN_PATH)/$(NAME).elf: $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $^
 
-deploy-flash:
-	$(PROG_SOFT) -p $(TARGET) -c $(PROG_DEV) -P $(DEV_PORT) -v -u -U flash:w:$(HEX_DIR)/$(PROJECT).hex
+.PHONY: clean install-flash install-eeprom set-fuse
 
-deploy-eeprom:
-	$(OBJCOPY) -I binary -O ihex --change-addresses=0x0020 $(DOCS_PATH)/eeprom.txt $(HEX_DIR)/eeprom.hex 
-	$(PROG_SOFT) -p $(TARGET) -c $(PROG_DEV) -P $(DEV_PORT) -v -u -U eeprom:w:$(HEX_DIR)/eeprom.hex
+install-flash:
+	$(PROG_SOFT) -p $(TARGET) -c $(PROG_DEV) -P $(DEV_PORT) -b57600 -v -u -U flash:w:$(HEX_PATH)/$(NAME).hex
+
+install-eeprom:
+	$(OBJCOPY) -I binary -O ihex --change-addresses=0x0020 $(DOCS_PATH)eeprom.txt $(HEX_PATH)/eeprom.hex 
+	$(PROG_SOFT) -p $(TARGET) -c $(PROG_DEV) -P $(DEV_PORT) -b57600 -v -u -U eeprom:w:$(HEX_PATH)/eeprom.hex
 
 set-fuse:
-	$(PROG_SOFT) -p $(TARGET) -c $(PROG_DEV) -P $(DEV_PORT) -v -u -U lfuse:w:$(HEX_DIR)/lfuse.hex:h 
-	$(PROG_SOFT) -p $(TARGET) -c $(PROG_DEV) -P $(DEV_PORT) -v -u -U hfuse:w:$(HEX_DIR)/lfuse.hex:h 
-	$(PROG_SOFT) -p $(TARGET) -c $(PROG_DEV) -P $(DEV_PORT) -v -u -U efuse:w:$(HEX_DIR)/efuse.hex:h 
+	$(PROG_SOFT) -p $(TARGET) -c $(PROG_DEV) -P $(DEV_PORT) -b57600 -v -u -U lfuse:w:$(HEX_PATH)/lfuse.hex:h 
+	$(PROG_SOFT) -p $(TARGET) -c $(PROG_DEV) -P $(DEV_PORT) -b57600 -v -u -U hfuse:w:$(HEX_PATH)/lfuse.hex:h 
+	$(PROG_SOFT) -p $(TARGET) -c $(PROG_DEV) -P $(DEV_PORT) -b57600 -v -u -U efuse:w:$(HEX_PATH)/efuse.hex:h 
 
 clean:
-	# rm -f $(BUILD_DIR)/*.o
-	-rm -fR $(BUILD_DIR)
-	rm -f $(HEX_DIR)/$(PROJECT).hex
-	rm -f $(HEX_DIR)/eeprom.hex
-
-
-#######################################
-# dependencies
-#######################################
--include $(wildcard $(BUILD_DIR)/*.d)
-
-# *** EOF ***
+	rm -f $(BUILD_PATH)/*.o
+	rm -f $(BIN_PATH)/$(NAME).elf
+	rm -f $(HEX_PATH)/$(NAME).hex
+	rm -f $(HEX_PATH)/eeprom.hex
+	
