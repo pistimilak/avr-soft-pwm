@@ -20,6 +20,10 @@
 #include "sig_config.h"
 
 
+#ifndef NULL
+	#define NULL ((void *)0); // define NULL pointer if necessary
+#endif
+
 /**
  * @brief Type definiton of LED signal
  *
@@ -30,6 +34,7 @@ typedef struct
 	sig_size_t      signal_size;        // length of signal
 	sig_val_t*      pval;               // pointer of current value
 	sig_size_t      phase_offset;       // phase offset for signal
+	sig_val_t 		(*get_val)(sig_t *)	// signal reader regarding to different memory location eg. EEPROM, FLASH
 } sig_t;
 
 
@@ -59,6 +64,6 @@ void         sig_tick(sig_t *signal);
  * @param signal signal struct
  * @return led_val_t LED val
  */
-sig_val_t    sig_get_val(sig_t *signal);
+sig_val_t    sig_get_val_ram(sig_t *signal);
 
 #endif // __LED_SIG_H__

@@ -85,7 +85,7 @@ A little bit slower then not buffering
 #define SPWM_CH7_DDR             DDRB
 #define SPWM_CH7_PORT            PORTB
 // CH8
-#define SPWM_CH8                 PB5
+#define SPWM_CH8                 PB2
 #define SPWM_CH8_DDR             DDRB
 #define SPWM_CH8_PORT            PORTB
 // CH9
@@ -97,23 +97,23 @@ A little bit slower then not buffering
 #define SPWM_CH10_DDR            DDRB
 #define SPWM_CH10_PORT           PORTB
 // CH11
-#define SPWM_CH11                PC0
-#define SPWM_CH11_DDR            DDRC
-#define SPWM_CH11_PORT           PORTC
+#define SPWM_CH11                PB5
+#define SPWM_CH11_DDR            DDRB
+#define SPWM_CH11_PORT           PORTB
 // CH12
-#define SPWM_CH12                PC1
+#define SPWM_CH12                PC0
 #define SPWM_CH12_DDR            DDRC
 #define SPWM_CH12_PORT           PORTC
 // CH13
-#define SPWM_CH13                PC2
+#define SPWM_CH13                PC1
 #define SPWM_CH13_DDR            DDRC
 #define SPWM_CH13_PORT           PORTC
 // CH14
-#define SPWM_CH14                PC3
+#define SPWM_CH14                PC2
 #define SPWM_CH14_DDR            DDRC
 #define SPWM_CH14_PORT           PORTC
 // CH15
-#define SPWM_CH15                PC4
+#define SPWM_CH15                PC3
 #define SPWM_CH15_DDR            DDRC
 #define SPWM_CH15_PORT           PORTC
 

@@ -275,12 +275,6 @@ void spwm_tick()
  */
 void spwm_tick()
 {
-    // idle_hook();
-    // PORTD = ((spwm_tick_cnt < spwm_duty_cycle_buff[0])) ? (PORTD | (1 << PD2)) : (PORTD & ~(1 << PD2));
-    // // if(spwm_duty_cycle_buff[0] == 127) {
-    // //     idle_hook();
-    // // }    
-
     __set_outp(SPWM_CH0_PORT, SPWM_CH0, SPWM_CH0_ID);    // CH0
     __set_outp(SPWM_CH1_PORT, SPWM_CH1, SPWM_CH1_ID);    // CH1
     __set_outp(SPWM_CH2_PORT, SPWM_CH2, SPWM_CH2_ID);    // CH2
@@ -300,14 +294,4 @@ void spwm_tick()
 
     spwm_tick_cnt = (spwm_tick_cnt < SPWM_TOP_VAL) ? (spwm_tick_cnt + 1) : 0;
 }
-
-
-// #if SPWM_TOP_VAL > 255 && SPWM_TOP_VAL < 65536
-//     inline void spwm_set_ch(uint8_t id, uint16_t val);
-// #else
-//     inline void spwm_set_ch(uint8_t id, uint8_t val){
-//         if(id < 0 || id >= SPWM_MAX_CHANNEL_NUM) return;
-//         spwm_duty_cycle_buff[id] = val;
-//     }
-// #endif
 #endif

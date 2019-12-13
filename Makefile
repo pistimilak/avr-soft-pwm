@@ -12,18 +12,19 @@ HEX_PATH = ./hex
 BIN_PATH = ./bin
 DOCS_PATH = ./docs
 
-OBJS = $(BUILD_PATH)/main.o $(BUILD_PATH)/soft_pwm.o $(BUILD_PATH)/sig.o $(BUILD_PATH)/sin.o
-DEPS = 
+OBJS  = $(BUILD_PATH)/main.o
+OBJS += $(BUILD_PATH)/soft_pwm.o
+OBJS += $(BUILD_PATH)/sig.o
+OBJS += $(BUILD_PATH)/sin.o 
 
-CFLAGS = -mmcu=$(TARGET) -Os -Iinc
-ASMFLAGS = -xassembler-with-cpp -mmcu=$(TARGET) -nostdlib
-# ASMFLAGS = -mmcu=$(TARGET)
+INC = -Iinc
+
+CFLAGS = -mmcu=$(TARGET) -Os $(INC) -DINIT_EEPROM=${INIT_EEPROM}
+ASMFLAGS = -xassembler-with-cpp -mmcu=$(TARGET) -nostdlib $(INC)
 LIBS = 
 
 $(BUILD_PATH)/%.o: $(SRC_PATH)/%.c
 	$(CC)  $(CFLAGS) -c -o $@ $<
-
-
 
 
 $(HEX_PATH)/$(NAME).hex: $(BIN_PATH)/$(NAME).elf
