@@ -19,7 +19,11 @@ OBJS += $(BUILD_PATH)/sin.o
 
 INC = -Iinc
 
-CFLAGS = -mmcu=$(TARGET) -Os $(INC) -DINIT_EEPROM=${INIT_EEPROM}
+CFLAGS = -mmcu=$(TARGET) -Os $(INC)
+ifeq (${INIT_EEPROM}, 1)
+CFLAGS += -DINIT_EEPROM
+endif
+
 ASMFLAGS = -xassembler-with-cpp -mmcu=$(TARGET) -nostdlib $(INC)
 LIBS = 
 

@@ -12,20 +12,18 @@
  */
 #include "sig.h"
 
+/*can be implemented*/
 
+sig_val_t (*sig_get_val)(sig_t *) = sig_get_val_ram; //default is the RAM reader
 
 /*Initilaizing led signal*/
-sig_t sig_init(sig_val_t *signal, sig_size_t sig_size, sig_size_t phase_offset, sig_val_t (*reader)(sig_t *))
+sig_t sig_init(sig_val_t *signal, sig_size_t sig_size, sig_size_t phase_offset)
 {
 	sig_t sig;
 	sig.signal = signal;
 	sig.signal_size = sig_size;
 	sig.phase_offset = phase_offset;
 	sig.pval = (signal + (phase_offset % sig.signal_size));
-	if (reader != NULL)
-		sig.get_val = reader;
-	else
-		sig.get_val = sig_get_val_ram; //default is the RAM reader
 	return sig;
 }
 

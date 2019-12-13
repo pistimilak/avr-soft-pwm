@@ -34,7 +34,6 @@ typedef struct
 	sig_size_t      signal_size;        // length of signal
 	sig_val_t*      pval;               // pointer of current value
 	sig_size_t      phase_offset;       // phase offset for signal
-	sig_val_t 		(*get_val)(sig_t *)	// signal reader regarding to different memory location eg. EEPROM, FLASH
 } sig_t;
 
 
@@ -47,7 +46,7 @@ typedef struct
  * @param phase_offset
  * @return led_sig_t
  */
-sig_t        sig_init(sig_val_t *signal, sig_size_t sig_size, sig_size_t phase_offset);
+sig_t       sig_init(sig_val_t *signal, sig_size_t sig_size, sig_size_t phase_offset);
 
 
 
@@ -56,14 +55,24 @@ sig_t        sig_init(sig_val_t *signal, sig_size_t sig_size, sig_size_t phase_o
  *
  * @param signal signal struct
  */
-void         sig_tick(sig_t *signal);
+void        sig_tick(sig_t *signal);
+
 
 /**
- * @brief Return a LED value which is pointed by pval
+ * @brief Return a LED value which is pointed by pval from EEPROM or FLASH by implemented function
  *
  * @param signal signal struct
  * @return led_val_t LED val
  */
-sig_val_t    sig_get_val_ram(sig_t *signal);
+sig_val_t 	(*sig_get_val)(sig_t *);	// signal reader regarding to different memory location eg. EEPROM, FLASH
+
+
+/**
+ * @brief Return a LED value which is pointed by pval from RAM
+ * 
+ * @param signal 
+ * @return sig_val_t 
+ */
+sig_val_t	sig_get_val_ram(sig_t *signal);
 
 #endif // __LED_SIG_H__
