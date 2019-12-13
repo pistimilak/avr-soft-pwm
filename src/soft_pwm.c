@@ -262,8 +262,6 @@ void spwm_tick()
     
     #define __set_outp(port, ch_outp, ch_id)                   port = ((spwm_en_state & (0x0001 << ch_id)) && (spwm_tick_cnt < spwm_duty_cycle_buff[ch_id])) ? \
                                                                 (port | (1 << ch_outp)) : (port & ~(1 << ch_outp))
-    
-    // #define __set_outp(port, ch_outp, ch_id)                   port = ((spwm_tick_cnt < spwm_duty_cycle_buff[ch_id])) ? (port | (1 << ch_outp)) : (port & ~(1 << ch_outp))
 #else
     #define __set_outp(port, ch_outp, ch_id)                   port = ((spwm_en_state & (0x0001 << ch_id)) && (spwm_tick_cnt > spwm_duty_cycle_buff[ch_id])) ? \
                                                                 (port | (1 << ch_outp)) : (port & ~(1 << ch_outp))
