@@ -28,6 +28,8 @@ endif
 ASMFLAGS = -xassembler-with-cpp -mmcu=$(TARGET) -nostdlib $(INC)
 LIBS = 
 
+
+
 $(BUILD_PATH)/%.o: $(SRC_PATH)/%.c
 	$(CC)  $(CFLAGS) -c -o $@ $<
 
@@ -40,6 +42,8 @@ $(BIN_PATH)/$(NAME).elf: $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^
 	avr-size $@
 
+
+
 .PHONY: clean install-flash install-eeprom set-fuse
 
 install-flash:
@@ -51,7 +55,7 @@ install-eeprom:
 
 set-fuse:
 	$(PROG_SOFT) -p $(TARGET) -c $(PROG_DEV) -P $(DEV_PORT) -b57600 -v -u -U lfuse:w:$(HEX_PATH)/lfuse.hex:h 
-	$(PROG_SOFT) -p $(TARGET) -c $(PROG_DEV) -P $(DEV_PORT) -b57600 -v -u -U hfuse:w:$(HEX_PATH)/lfuse.hex:h 
+	$(PROG_SOFT) -p $(TARGET) -c $(PROG_DEV) -P $(DEV_PORT) -b57600 -v -u -U hfuse:w:$(HEX_PATH)/hfuse.hex:h 
 	$(PROG_SOFT) -p $(TARGET) -c $(PROG_DEV) -P $(DEV_PORT) -b57600 -v -u -U efuse:w:$(HEX_PATH)/efuse.hex:h 
 
 clean:
