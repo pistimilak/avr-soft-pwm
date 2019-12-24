@@ -1,1 +1,5 @@
 build/*.o
+inc/soft_pwm_asm.h
+inc/soft_pwm_asm_cfg.h
+src/soft_pwm.S
+src/soft_pwm_asm.asm
