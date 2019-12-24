@@ -18,8 +18,7 @@
 #define EEPROM_LED13_offset     ((const uint8_t *)0x03F5)           /* uint8_t LED13 phase offset */
 #define EEPROM_LED14_offset     ((const uint8_t *)0x03F6)           /* uint8_t LED14 phase offset */
 #define EEPROM_LED15_offset     ((const uint8_t *)0x03F7)           /* uint8_t LED15 phase offset */
-#define EEPROM_SPWM_TIM8_OCR    ((const uint8_t *)0x03F8)           /* uint8_t Timer0 compare match value for soft pwm */
-#define EEPROM_SIG_TIM16_OCR    ((const uint16_t *)0x03F9)          /* uint16_t Timer1 comapre match value for signal tracking */
-#define EEPROM_SPWM_EN_STATE    ((const uint16_t *)0x03FB)          /* uint16_t enable state for soft pwm*/
+#define EEPROM_SIG_TIM16_OCR    ((const uint16_t *)0x03F8)          /* uint16_t Timer1 comapre match value for signal tracking */
+#define EEPROM_SPWM_EN_STATE    ((const uint16_t *)0x03FA)          /* uint16_t enable state for soft pwm*/
 
 #endif

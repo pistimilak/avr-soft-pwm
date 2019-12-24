@@ -10,12 +10,13 @@ BUILD_PATH = ./build
 SRC_PATH = ./src
 HEX_PATH = ./hex
 BIN_PATH = ./bin
-DOCS_PATH = ./docs
+TOOLS_PATH = ./tools
 
 OBJS  = $(BUILD_PATH)/main.o
 OBJS += $(BUILD_PATH)/soft_pwm.o
 OBJS += $(BUILD_PATH)/sig.o
 OBJS += $(BUILD_PATH)/sin.o 
+
 
 INC = -Iinc
 
@@ -37,6 +38,7 @@ $(HEX_PATH)/$(NAME).hex: $(BIN_PATH)/$(NAME).elf
 
 $(BIN_PATH)/$(NAME).elf: $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^
+	avr-size $@
 
 .PHONY: clean install-flash install-eeprom set-fuse
 
@@ -44,7 +46,7 @@ install-flash:
 	$(PROG_SOFT) -p $(TARGET) -c $(PROG_DEV) -P $(DEV_PORT) -b57600 -v -u -U flash:w:$(HEX_PATH)/$(NAME).hex
 
 install-eeprom:
-	$(OBJCOPY) -I binary -O ihex --change-addresses=0x0020 $(DOCS_PATH)eeprom.txt $(HEX_PATH)/eeprom.hex 
+	$(OBJCOPY) -I binary -O ihex $(TOOLS_PATH)/eeprom.bin $(HEX_PATH)/eeprom.hex 
 	$(PROG_SOFT) -p $(TARGET) -c $(PROG_DEV) -P $(DEV_PORT) -b57600 -v -u -U eeprom:w:$(HEX_PATH)/eeprom.hex
 
 set-fuse:

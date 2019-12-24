@@ -13,7 +13,6 @@
 #include "sig.h"
 
 /*can be implemented*/
-
 sig_val_t (*sig_get_val)(sig_t *) = sig_get_val_ram; //default is the RAM reader
 
 /*Initilaizing led signal*/

@@ -102,7 +102,7 @@ spwm_init_8b:
 
 	lds		en_state_l_reg, spwm_en_state							; load enable state low byte to register
 	lds		en_state_h_reg, spwm_en_state + 1						; load enable state high byte to register
-	sts		spwm_tick_cnt, r0							; reset counter
+	sts		spwm_tick_cnt, r1							; reset counter
 	ldi		r23, SPWM_MAX_CHANNEL_NUM					; reset value
 	ldi		ZL, lo8(spwm_val_buff)						; load buffer address to Z
 	ldi		ZH, hi8(spwm_val_buff)
@@ -125,7 +125,7 @@ spwm_init_8b:
 	SET_CH_DDR		en_state_h_reg, 7, SPWM_CH15_DDR, SPWM_CH15		; set ch15 DDR
 	nop
 RESET_VALUE:
-	st		Z+, r0													; set pointer to 0 after increment pointer	
+	st		Z+, r1													; set pointer to 0 after increment pointer	
 	dec		r23														; decrement temp buff counter
 	brne	RESET_VALUE												; reset if cnt not 0
 	ret																; return

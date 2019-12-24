@@ -3,6 +3,7 @@
 
 
 #include <avr/io.h>
+#include <avr/interrupt.h>
 #include <inttypes.h>
 #include "soft_pwm_config.h"
 
@@ -81,18 +82,18 @@
 
 #if SPWM_TOP_VAL > 255 && SPWM_TOP_VAL < 65536
     volatile extern uint16_t spwm_duty_cycle_buff[SPWM_MAX_CHANNEL_NUM];
-    // inline void spwm_set_ch(uint8_t id, uint16_t val);
 #else
     volatile extern uint8_t spwm_duty_cycle_buff[SPWM_MAX_CHANNEL_NUM];
-    // inline void spwm_set_ch(uint8_t id, uint8_t val);
 #endif
-// extern spwm_duty_cycle_buff[SPWM_MAX_CHANNEL_NUM];
-// extern volatile uint16_t spwm_en_state;
 
+extern volatile uint16_t spwm_tick_cnt;
+
+
+#define spwm_set_ch(id,val)                 spwm_duty_cycle_buff[id] = val
+#define spwm_ch_enable(id)                  (spwm_en_state |= (1 << id))
+#define spwm_is_ch_enabled(id)              (spwm_en_state & (1 << id))
+// #define spwm_tick()                         spwm_tick_cnt = (spwm_tick_cnt < SPWM_TOP_VAL) ? (spwm_tick_cnt + 1) : 0
 void spwm_init(uint16_t en_state);
 void spwm_tick();
-// #define spwm_set_en_state(state)            spwm_en_state = state
-#define spwm_set_ch(id,val)                 spwm_duty_cycle_buff[id] = val
-// #define spwm_ch_enable(id)                  (spwm_en_state |= (1 << id))
-// #define spwm_is_ch_enabled(id)              (spwm_en_state & (1 << id))
+
 #endif

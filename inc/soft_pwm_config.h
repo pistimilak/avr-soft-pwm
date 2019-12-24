@@ -38,7 +38,7 @@ A little bit slower then not buffering
     #define SPWM_MAX_PORT_NUM       8
     #define SPWM_PORTA_USED         0
     #define SPWM_PORTB_USED         1
-    #define SPWM_PORTC_USED         0
+    #define SPWM_PORTC_USED         1
     #define SPWM_PORTD_USED         1
     #define SPWM_PORTE_USED         0
     #define SPWM_PORTF_USED         0
