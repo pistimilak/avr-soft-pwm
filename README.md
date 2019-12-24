@@ -17,4 +17,4 @@ Parameters:
 - signal array (uint8_t [1000])
 
 Calculation for real signal period time:
-T = T_signal / ((F_CPU / (8 * 1000))
+T = T_signal / (F_CPU / (8 * 1000))
