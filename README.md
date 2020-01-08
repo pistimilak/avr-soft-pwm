@@ -31,7 +31,7 @@ T_signal : Timer OCR value, stored in the EEPROM
 F_CPU:     16 MHz => 16 * 10^6 Hz
 
 ```
-## Programing flash
+## Programming flash
 ```
 $ make install-flash
 ```
