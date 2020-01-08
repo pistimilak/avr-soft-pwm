@@ -51,6 +51,7 @@ install-flash:
 	$(PROG_SOFT) -p $(TARGET) -c $(PROG_DEV) -P $(DEV_PORT) -b57600 -v -u -U flash:w:$(HEX_DIR)/$(NAME).hex
 
 install-eeprom:
+	./tools/create_eeprom_bin.py
 	$(OBJCOPY) -I binary -O ihex $(TOOLS_DIR)/eeprom.bin $(HEX_DIR)/eeprom.hex 
 	$(PROG_SOFT) -p $(TARGET) -c $(PROG_DEV) -P $(DEV_PORT) -b57600 -v -u -U eeprom:w:$(HEX_DIR)/eeprom.hex
 
