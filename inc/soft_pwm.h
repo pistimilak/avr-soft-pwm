@@ -26,7 +26,7 @@
 #define SPWM_CH15_ID             15
 
 
-
+/*Port Buffering settings*/
 #if SPWM_USE_PORT_BUFFERING
 #define SPWM_PORTA_BUFF_IDX      0
 #define SPWM_PORTB_BUFF_IDX      1
@@ -39,6 +39,7 @@
 #endif
 
 
+/*Print configuration by compiler*/
 #if (SPWM_MODE==SPWM_MODE_NON_INVERTING)
     #warning None Inverting PWM mode activated
 #elif (SPWM_MODE==SPWM_MODE_INVERTING)
@@ -79,7 +80,7 @@
     #endif
 #endif
 
-
+/*Declaring buffer with the suitable type*/
 #if SPWM_TOP_VAL > 255 && SPWM_TOP_VAL < 65536
     volatile extern uint16_t spwm_duty_cycle_buff[SPWM_MAX_CHANNEL_NUM];
 #else
@@ -88,11 +89,12 @@
 
 extern volatile uint16_t spwm_tick_cnt;
 
-
+/*macros*/
 #define spwm_set_ch(id,val)                 spwm_duty_cycle_buff[id] = val
 #define spwm_ch_enable(id)                  (spwm_en_state |= (1 << id))
 #define spwm_is_ch_enabled(id)              (spwm_en_state & (1 << id))
-// #define spwm_tick()                         spwm_tick_cnt = (spwm_tick_cnt < SPWM_TOP_VAL) ? (spwm_tick_cnt + 1) : 0
+
+/*Functions*/
 void spwm_init(uint16_t en_state);
 void spwm_tick();
 
