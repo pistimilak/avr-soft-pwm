@@ -18,6 +18,12 @@ print("avrdude -p atmega328p -c arduino -P /dev/ttyUSB0 -b57600 -v -u -U eeprom:
 print("command for downloading eeprom content to hex file:")
 print("avrdude -p atmega328p -c arduino -P /dev/ttyUSB0 -b57600 -v -u -U eeprom:r:./hex/eeprom.hex:i\n")
 
+# set current working dir
+abspath = os.path.abspath(__file__)
+dname = os.path.dirname(abspath)
+os.chdir(dname)
+
+
 with open("eeprom_conf.json") as cfg_file:
     cfg = json.load(cfg_file)
 

@@ -1,4 +1,13 @@
-#ifndef __EEPROM_MAP_H__
+/**
+ * @file eeprom_map.h
+ * @author your name (you@domain.com)
+ * @brief 
+ * @version 0.1
+ * @date 2020-01-08
+ * 
+ * @copyright Copyright (c) 2020
+ * 
+ */
 #define __EEPROM_MAP_H__
 
 #define EEPROM_Signal           ((const uint8_t *)0x0000)           /* uint8_t [1000] signal value array */

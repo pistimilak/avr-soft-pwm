@@ -38,7 +38,7 @@
         "led15" : true
     },
 
-    "T_signal" : 1000,
+    "T_signal" : 10000,
     
     "signal_array" : 
     [
