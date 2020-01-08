@@ -1,7 +1,7 @@
 /**
  * @file main.c
  * @author Istvan Milak (istvan.milak@gmail.com)
- * @brief 
+ * @brief AVR soft pwm solution for 16 channels. Signal stored in the EEPROM, tracked by timer interrupt
  * @version 0.1
  * @date 2019-12-07
  * 
@@ -20,8 +20,7 @@
 #include "eeprom_map.h"
 #include "soft_pwm.h"
 #include "sig.h"
-// #include "uart.h"
-// #include "mcu_msg.h"
+
 
 #define LED_NUM     SPWM_MAX_CHANNEL_NUM
 #define SIG_LENGTH  1000
@@ -36,6 +35,7 @@ void Init();
 sig_val_t eeprom_sig_reader(sig_t *signal);
 sig_t leds[LED_NUM];
 
+/*Initializing EEPROM by internal software*/
 #ifdef INIT_EEPROM
     #warning EEPROM initializing will be prepared!
     extern volatile const sig_val_t sin_signal[1000];
@@ -65,6 +65,10 @@ void idle_hook()
 }
 
 #ifdef INIT_EEPROM
+/**
+ * @brief Init EEPROM with default values, for this use "make INIT_EEPROM=1 command"
+ * 
+ */
 void Init_EEPROM()
 {
     uint16_t i;
@@ -130,7 +134,12 @@ ISR(TIMER1_COMPA_vect)
     }
 }
 
-/*implementation for reading signal from EEPROM*/
+/**
+ * @brief implementation for reading signal from EEPROM*
+ * 
+ * @param signal signal handler pointer
+ * @return sig_val_t pointed value from EEPROM
+ */
 sig_val_t eeprom_sig_reader(sig_t *signal)
 {
     return eeprom_read_byte(signal->pval);

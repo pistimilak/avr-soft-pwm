@@ -35,16 +35,16 @@ volatile static uint8_t spwm_port_buff[SPWM_MAX_PORT_NUM] = {0};
 volatile uint16_t spwm_tick_cnt = 0;
 volatile static uint16_t spwm_en_state = 0;
 
-extern void idle_hook();
+// extern void idle_hook();
 
 
 
 
 
 /**
- * @brief 
+ * @brief Init soft pwm lib
  * 
- * @param en_state 
+ * @param en_state Enable state of the channels. Use bit mask
  */
 void spwm_init(uint16_t en_state)
 {
@@ -80,10 +80,10 @@ void spwm_init(uint16_t en_state)
 
 #if SPWM_USE_PORT_BUFFERING
 /**
- * @brief 
+ * @brief Get buffered port
  * 
- * @param uint8_t 
- * @return uint8_t* 
+ * @param uint8_t Port pointer
+ * @return uint8_t* Bufferde value
  */
 static uint8_t* spwm_get_port_buff(volatile uint8_t *port) 
 {
@@ -126,7 +126,7 @@ static uint8_t* spwm_get_port_buff(volatile uint8_t *port)
 }
 
 /**
- * @brief 
+ * @brief Port buffering
  * 
  */
 static void spwm_buffering_ports()
@@ -174,7 +174,7 @@ static void spwm_buffering_ports()
 }
 
 /**
- * @brief 
+ * @brief Write buffered values to the Ports
  * 
  */
 static void spwm_write_ports()
@@ -221,6 +221,7 @@ static void spwm_write_ports()
 #endif
 }
 
+/*Set output macros in port buffering mode*/
 #if SPWM_MODE == SPWM_MODE_NON_INVERTING
     #define __set_outp(port_buff, port, ch_outp, ch_id)        port_buff = spwm_get_port_buff(&port); \
                                                                 *port_buff = ((spwm_en_state & (0x0001 << ch_id)) && (spwm_tick_cnt < spwm_duty_cycle_buff[ch_id])) ? \
@@ -231,7 +232,10 @@ static void spwm_write_ports()
                                                                 (*port_buff | (1 << ch_outp)) : (*port_buff & ~(1 << ch_outp))
 #endif
 
-
+/**
+ * @brief Tick spwm in port buffering mode
+ * 
+ */
 void spwm_tick()
 {
 
@@ -261,27 +265,35 @@ void spwm_tick()
 }
 #else
 
+/*Deciding to use asm macros to set output (Windows AVR toolchan can't compile)*/
+#define USE_ASM_MACRO       0
 
-#define __sbi(port,bit)         __asm__ __volatile__("sbi %0, %1": :"i"(_SFR_IO_ADDR(port)), "i"(bit):)
-#define __cbi(port,bit)         __asm__ __volatile__("cbi %0, %1": :"i"(_SFR_IO_ADDR(port)), "i"(bit):)
-
+#if USE_ASM_MACRO
+    #define __sbi(port,bit)         __asm__ __volatile__("sbi %0, %1": :"i"(_SFR_IO_ADDR(port)), "i"(bit):)
+    #define __cbi(port,bit)         __asm__ __volatile__("cbi %0, %1": :"i"(_SFR_IO_ADDR(port)), "i"(bit):)
+#endif
 
 
 #if SPWM_MODE == SPWM_MODE_NON_INVERTING
-    
-    // #define __set_outp(port, ch_outp, ch_id)                   port = ((spwm_en_state & (0x0001 << ch_id)) && (spwm_tick_cnt < spwm_duty_cycle_buff[ch_id])) ? \
-                                                                (port | (1 << ch_outp)) : (port & ~(1 << ch_outp))
-    #define __set_outp(port, ch_outp, ch_id)                   if((spwm_en_state & (0x0001 << ch_id)) && (spwm_tick_cnt < spwm_duty_cycle_buff[ch_id]))\
+    #if USE_ASM_MACRO
+        #define __set_outp(port, ch_outp, ch_id)                   if((spwm_en_state & (0x0001 << ch_id)) && (spwm_tick_cnt < spwm_duty_cycle_buff[ch_id]))\
                                                                     __sbi(port, ch_outp); else __cbi(port, ch_outp)
+    #else
+        #define __set_outp(port, ch_outp, ch_id)                   port = ((spwm_en_state & (0x0001 << ch_id)) && (spwm_tick_cnt < spwm_duty_cycle_buff[ch_id])) ? \
+                                                                    (port | (1 << ch_outp)) : (port & ~(1 << ch_outp))
+    #endif    
 #else
-    // #define __set_outp(port, ch_outp, ch_id)                   port = ((spwm_en_state & (0x0001 << ch_id)) && (spwm_tick_cnt > spwm_duty_cycle_buff[ch_id])) ? \
-    //                                                             (port | (1 << ch_outp)) : (port & ~(1 << ch_outp))
-    #define __set_outp(port, ch_outp, ch_id)                   if((spwm_en_state & (0x0001 << ch_id)) && (spwm_tick_cnt < spwm_duty_cycle_buff[ch_id]))\
+    #if USE_ASM_MACRO
+        #define __set_outp(port, ch_outp, ch_id)                   if((spwm_en_state & (0x0001 << ch_id)) && (spwm_tick_cnt < spwm_duty_cycle_buff[ch_id]))\
                                                                     __cbi(port, ch_outp); else __sbi(port, ch_outp)
+    #else
+        #define __set_outp(port, ch_outp, ch_id)                   port = ((spwm_en_state & (0x0001 << ch_id)) && (spwm_tick_cnt > spwm_duty_cycle_buff[ch_id])) ? \
+                                                                (port | (1 << ch_outp)) : (port & ~(1 << ch_outp))
+    #endif
 #endif
 
 /**
- * @brief 
+ * @brief Tick soft pwm
  * 
  */
 void spwm_tick()
