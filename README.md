@@ -7,7 +7,11 @@ Tested on Arduino nano.
 The soft pwm library supports 16 channels which are configurable int the config header.
 There is a signal handler library to iterate a signal as pwm duty cycle.
 
-The eeprom_map.h file containes the parameter addresses of EEPROM.
+You can find the soft pwm settings in ***./inc/soft_pwm_config.h*** file.
+
+The signal settings are in ***./inc/sig_config.h*** file.
+
+The ***./inc/eeprom_map.h*** file containes the parameter addresses of EEPROM.
 
 You can modify the parameters in the EEPROM with ***./tools/create_eeprom_bin.py*** and the corresponding ***eeprom_conf.json*** file.
 With make you can update the EEPROM.
