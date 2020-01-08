@@ -1,3 +1,13 @@
+/**
+ * @file soft_pwm.h
+ * @author Istvan Milak (istvan.milak@gmail.com)
+ * @brief AVR soft pwm for 16 channel
+ * @version 0.1
+ * @date 2020-01-08
+ * 
+ * @copyright Copyright (c) 2020
+ * 
+ */
 #ifndef __SOFT_PWM_H__
 #define __SOFT_PWM_H__
 

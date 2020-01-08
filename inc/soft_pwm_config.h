@@ -1,7 +1,7 @@
 /**
  * @file soft_pwm_config.h
- * @author your name (you@domain.com)
- * @brief 
+ * @author Istvan Milak (istvan.milak@gmail.com)
+ * @brief AVR soft pwm for 16 channel
  * @version 0.1
  * @date 2019-12-07
  * 

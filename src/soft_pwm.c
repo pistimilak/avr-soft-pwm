@@ -1,7 +1,7 @@
 /**
  * @file soft_pwm.c
  * @author Istvan Milak (istvan.milak@gmail.com)
- * @brief 
+ * @brief AVR soft pwm for 16 channel
  * @version 0.1
  * @date 2019-12-07
  * 
@@ -288,7 +288,7 @@ void spwm_tick()
                                                                     __cbi(port, ch_outp); else __sbi(port, ch_outp)
     #else
         #define __set_outp(port, ch_outp, ch_id)                   port = ((spwm_en_state & (0x0001 << ch_id)) && (spwm_tick_cnt > spwm_duty_cycle_buff[ch_id])) ? \
-                                                                (port | (1 << ch_outp)) : (port & ~(1 << ch_outp))
+                                                                    (port | (1 << ch_outp)) : (port & ~(1 << ch_outp))
     #endif
 #endif
 
