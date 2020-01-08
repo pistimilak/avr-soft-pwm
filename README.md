@@ -7,10 +7,10 @@ Tested on Arduino nano.
 The soft pwm library supports 16 channels which are configurable int the config header.
 There is a signal handler library to iterate a signal as pwm duty cycle.
 
-The eeprom_map.h file containes the parameter eeprom addresses.
+The eeprom_map.h file containes the parameter addresses of EEPROM.
 
-You can modify the parameters in the eeprom with ***./tools/create_eeprom_bin.py*** and the corresponding ***eeprom_conf.json*** file.
-With make you can update the eeprom.
+You can modify the parameters in the EEPROM with ***./tools/create_eeprom_bin.py*** and the corresponding ***eeprom_conf.json*** file.
+With make you can update the EEPROM.
 
 Parameters:
 - LED signal phase offsets (uint8_t)
@@ -34,22 +34,24 @@ $ make install-flash
 
 ## Create configuration
 Example:
-1. Create configuration bin:
+1. Configure the parameters in ***./tools/eeprom_conf.json***
+
+2. Create configuration bin:
 ```
 $ python3 ./tools/create_eeprom_bin.py
 ```
 
-2. Create hex from the bin:
+3. Create hex from the bin:
 ```
 $ avr-objcopy -I binary -O ihex --change-addresses=0x0000 ./tools/eeprom.bin ./hex/eeprom.hex
 ```
 
-3. Programming EEPROM:
+4. Programming EEPROM:
 ```
 $ avrdude -p atmega328p -c arduino -P /dev/ttyUSB0 -b57600 -v -u -U eeprom:w:./hex/eeprom.hex
 ```
 
-4. Use make for programming EEPROM (step 2 and 3 together):
+Or use make for programming EEPROM (step 2 and 3 together):
 ```
 $ make install-eeprom
 ```
