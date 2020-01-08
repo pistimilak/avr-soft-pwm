@@ -46,7 +46,7 @@ $ avr-objcopy -I binary -O ihex --change-addresses=0x0000 ./tools/eeprom.bin ./h
 
 3. Programming EEPROM:
 ```
-avrdude -p atmega328p -c arduino -P /dev/ttyUSB0 -b57600 -v -u -U eeprom:w:./hex/eeprom.hex
+$ avrdude -p atmega328p -c arduino -P /dev/ttyUSB0 -b57600 -v -u -U eeprom:w:./hex/eeprom.hex
 ```
 
 4. Use make for programming EEPROM (step 2 and 3 together):
