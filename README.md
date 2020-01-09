@@ -13,7 +13,8 @@ The signal settings are in ***./inc/sig_config.h*** file.
 
 The ***./inc/eeprom_map.h*** file containes the parameter addresses of EEPROM.
 
-You can modify the parameters in the EEPROM with ***./tools/create_eeprom_bin.py*** and the corresponding ***eeprom_conf.json*** file.
+You can modify the parameters in the EEPROM with ***./tools/create_eeprom_bin.py*** and the corresponding ***eeprom_conf.json*** file. Currently the *eeprom_conf.json* containes a Perlin noise signal (length: 1000).
+
 With make you can update the EEPROM.
 
 Parameters:
@@ -32,6 +33,12 @@ F_CPU:     16 MHz => 16 * 10^6 Hz
 
 ```
 ## Programming flash
+Command:
+```
+$ avrdude -p atmega328p -c arduino -P /dev/ttyUSB0 -b57600 -v -u -U flash:w:./hex/avr-soft-pwm.hex
+```
+
+Or use make:
 ```
 $ make install-flash
 ```
